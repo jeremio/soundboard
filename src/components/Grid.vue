@@ -46,6 +46,5 @@ function inputIntoSelectOrNot(sound: MySound) {
 .grid {
   display: flex;
   flex-wrap: wrap;
-  min-height: 100vh;
 }
 </style>

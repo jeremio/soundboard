@@ -1,6 +1,6 @@
 <template>
-  <div class="sound">
-    <button class="copy-cursor" style="width: 60px; border-right: 1px solid;" @click="copyURL(sound.src)">
+  <div class="bouton">
+    <div class="action copy-cursor" @click="copyURL(sound.src)">
       <svg
         xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard"
         viewBox="0 0 16 16"
@@ -12,15 +12,15 @@
           d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"
         />
       </svg>
-    </button>
-    <button @click="toggle(sound.id.toString())">
+    </div>
+    <p class="action label">
       {{ sound.label }}
-    </button>
+    </p>
     <div
-      class="stop"
+      class="action"
       @click="toggle(sound.id.toString())"
     >
-      <div :class="{ 'is-playing': isPlaying }" />
+      <div class="triangle_square" :class="{ 'is-playing': isPlaying }" />
     </div>
     <audio
       :id="sound.id.toString()"
@@ -78,75 +78,66 @@ async function copyURL(mytext: string) {
 </script>
 
 <style scoped>
-.sound {
+.bouton {
   background-color: white;
-  display: inline-block;
-  vertical-align: middle;
+  display: flex;
   margin: 30px 20px;
   position: relative;
   border-radius: 5px;
   border: 2px solid white;
+  height: 60px;
+}
 
-  &:hover, &:focus {
-    border-color: #0e1e24;
+.action {
+  width: 60px;
+  background: white;
+  display: grid;
+  place-items: center;
+
+  &:has(.triangle_square){
     cursor: pointer;
   }
+  &:hover, &:focus {
+    border-color: #0e1e24;
+    border-width: 2px;
 
-  .copy-cursor {
-    cursor: copy;
   }
 }
 
-button {
+.copy-cursor {
+  cursor: copy;
+  border-right: 1px solid;
+}
+
+.label {
   color: #0e1e24;
   font-weight: bold;
   text-transform: capitalize;
-  height: 60px;
+  padding: 0 8px;
   width: 200px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  background: white;
-  border: none;
-
-  &:focus {
-    outline: none;
-  }
-
 }
 
-.stop {
-  width: 60px;
-  height: 60px;
-  background: white;
-  display: inline-block;
-  vertical-align: top;
-  box-sizing: border-box;
-  padding: 20px;
-  border-left: 1px solid #0e1e24;
+.triangle_square {
+  width: 0;
+  height: 0;
+  border-left: 10px solid #0e1e24;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  display: block;
+  transition: all 0.5s;
 
-  > div {
-    width: 0;
-    height: 0;
-    border-left: 10px solid #0e1e24;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    display: block;
+  &.is-playing {
+    border-bottom: 10px solid #0e1e24;
+    border-top: 10px solid #0e1e24;
+    border-right: 10px solid #0e1e24;
     transition: all 0.5s;
-
-    &.is-playing {
-      border-bottom: 10px solid #0e1e24;
-      border-top: 10px solid #0e1e24;
-      border-right: 10px solid #0e1e24;
-      transition: all 0.5s;
-    }
   }
 }
 
 audio {
   visibility: hidden;
   position: absolute;
-  top: 65px;
+  top: 60px;
   left: 0;
   width: 100%;
 

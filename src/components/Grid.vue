@@ -41,3 +41,12 @@ function inputIntoSelectOrNot(sound: MySound) {
     return isSearchMatch(sound.label) || isSearchMatch(sound.src)
 }
 </script>
+
+<style lang="css">
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  min-height: 100vh;
+}
+</style>

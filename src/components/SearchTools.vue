@@ -27,8 +27,6 @@ const selectedCategory = defineModel('selectedCategory')
 
 <style scoped>
 .search-tools {
-  text-align: center;
-
   select {
     color: #0e1e24;
     font-weight: bold;

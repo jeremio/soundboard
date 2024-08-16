@@ -41,9 +41,3 @@ function inputIntoSelectOrNot(sound: MySound) {
     return isSearchMatch(sound.label) || isSearchMatch(sound.src)
 }
 </script>
-
-<style scoped>
-.grid {
-  text-align: center;
-}
-</style>

@@ -4,8 +4,8 @@ import Board from '~/pages/Board.vue'
 
 const routes = [
   {
-    name: 'home',
     path: '/',
+    name: 'home',
     component: Board,
   },
 ]

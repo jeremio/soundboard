@@ -1,0 +1,898 @@
+[
+  {
+    "label": "wow",
+    "src": "wow.mp3",
+    "categories": [
+      "film",
+      "onomatopée"
+    ]
+  },
+  {
+    "label": "ah",
+    "src": "ah.mp3",
+    "categories": [
+      "koh lantah",
+      "onomatopée"
+    ]
+  },
+  {
+    "label": "il est content gaetan",
+    "src": "il-est-content-gaetan.mp3",
+    "categories": [
+      "dessin animée"
+    ]
+  },
+  {
+    "label": "tout le monde sen fout",
+    "src": "jurassic-park-tout-le-monde-sen-fout.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "comment y tas defonce",
+    "src": "la-tour-montparnasse-infernale-comment-y-tas-defonce.mp3",
+    "categories": [
+      "tour montparnasse",
+      "film"
+    ]
+  },
+  {
+    "label": "noot noot",
+    "src": "noot-noot.mp3",
+    "categories": [
+      "dessin animée"
+    ]
+  },
+  {
+    "label": "pas besoin de protection dans la vie",
+    "src": "omar-ef-fred-protection.mp3",
+    "categories": [
+      "humoriste"
+    ]
+  },
+  {
+    "label": "mais c'est de la merde",
+    "src": "mais c'est de la merde.mp3",
+    "categories": [
+      "tv"
+    ]
+  },
+  {
+    "label": "bon travail",
+    "src": "bon-travail.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "c'est nul",
+    "src": "cest-nul.mp3",
+    "categories": [
+      "pub"
+    ]
+  },
+  {
+    "label": "knacki",
+    "src": "mais-tavais-dit-quon-ferait-des-knacki.mp3",
+    "categories": [
+      "pub"
+    ]
+  },
+  {
+    "label": "pas de palais",
+    "src": "pas-de-palais-pas-de-palais.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "maurice",
+    "src": "tu-pousses-le-bouchon-un-peu-trop-loin-maurice.mp3",
+    "categories": [
+      "pub"
+    ]
+  },
+  {
+    "label": "encore du travail",
+    "src": "warcraft-3-humain-travail.mp3",
+    "categories": [
+      "jeu vidéo"
+    ]
+  },
+  {
+    "label": "travail terminé",
+    "src": "travail-termine.mp3",
+    "categories": [
+      "jeu vidéo"
+    ]
+  },
+  {
+    "label": "cool cool cool",
+    "src": "cool-cool-cool-cool-cool.mp3",
+    "categories": [
+      "série",
+      "brooklyn99"
+    ]
+  },
+  {
+    "label": "cool cool cool 2",
+    "src": "cool-cool-cool-cool-cool-2.mp3",
+    "categories": [
+      "série",
+      "brooklyn99"
+    ]
+  },
+  {
+    "label": "cool cool cool 3",
+    "src": "cool-cool-cool-cool-cool-3.mp3",
+    "categories": [
+      "série",
+      "brooklyn99"
+    ]
+  },
+  {
+    "label": "cool cool cool 4",
+    "src": "cool-cool-cool-cool-cool-4.mp3",
+    "categories": [
+      "série",
+      "brooklyn99"
+    ]
+  },
+  {
+    "label": "cool cool cool 5",
+    "src": "cool-cool-cool-cool-cool-5.mp3",
+    "categories": [
+      "série",
+      "brooklyn99"
+    ]
+  },
+  {
+    "label": "j'aime me beurrer la biscotte",
+    "src": "oss-117-jaime-me-beurrer-la-biscotte.mp3",
+    "categories": [
+      "film",
+      "oss117"
+    ]
+  },
+  {
+    "label": "ça sent le taureau ici",
+    "src": "mais-qui-a-tue-pamela-rose-ca-sent-le-taureau-ici-a-rungis.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "c'est mieux comme ça ?",
+    "src": "cest-mieux-comme-ca.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "ça fait des chocapics",
+    "src": "et-paf-ca-fait-des-chocapic.mp3",
+    "categories": [
+      "pub"
+    ]
+  },
+  {
+    "label": "oh oh oh ooh",
+    "src": "motus-boule-noire.mp3",
+    "categories": [
+      "tv"
+    ]
+  },
+  {
+    "label": "t'as pas envie...",
+    "src": "rrrrrrr-tas-pas-envie-des-fois-de-pas-rien-faire.mp3",
+    "categories": [
+      "film",
+      "rrrrr"
+    ]
+  },
+  {
+    "label": "un sandwish",
+    "src": "rrrrrrr-celui-qui-dit-quil-la-fait-je-lui-offre-un-sandwish.mp3",
+    "categories": [
+      "film",
+      "rrrrr"
+    ]
+  },
+  {
+    "label": "elle est morte de vieillesse",
+    "src": "rrrrrrr-non-mais-je-sais.mp3",
+    "categories": [
+      "film",
+      "rrrrr"
+    ]
+  },
+  {
+    "label": "c'est peut être un végétal",
+    "src": "rrrrrrr-si-cest-pas-un-animal-quil-la-tue-cest-ptet-un-vegetal.mp3",
+    "categories": [
+      "film",
+      "rrrrr"
+    ]
+  },
+  {
+    "label": "cochon",
+    "src": "cochon.mp3",
+    "categories": [
+      "webtv"
+    ]
+  },
+  {
+    "label": "rafiki",
+    "src": "rafiki.mp3",
+    "categories": [
+      "webtv"
+    ]
+  },
+  {
+    "label": "wesh alors",
+    "src": "wesh alors.mp3",
+    "categories": [
+      "musique"
+    ]
+  },
+  {
+    "label": "je sais qui c'est",
+    "src": "oss-117-jai-vu-je-sais-qui-cest-mais-je-ne-dirais-rien.mp3",
+    "categories": [
+      "film",
+      "oss117"
+    ]
+  },
+  {
+    "label": "bblblblblblbl",
+    "src": "bblblblblblbl.mp3",
+    "categories": [
+      "webtv"
+    ]
+  },
+  {
+    "label": "bblblblblblbl 2",
+    "src": "bblblblblblbl-2.mp3",
+    "categories": [
+      "webtv"
+    ]
+  },
+  {
+    "label": "je veux faire l'amour",
+    "src": "mais-moi-jveux-faire-lamour.mp3",
+    "categories": [
+      "tv"
+    ]
+  },
+  {
+    "label": "t'es un malade bernard",
+    "src": "tes-un-malade-bernard.mp3",
+    "categories": [
+      "tv"
+    ]
+  },
+  {
+    "label": "les boules de noel",
+    "src": "boules-de-noel-oss-117.mp3",
+    "categories": [
+      "oss117",
+      "film"
+    ]
+  },
+  {
+    "label": "laissez la police faire son travail",
+    "src": "laissez-la-police-faire-son-travail.mp3",
+    "categories": [
+      "la cité de la peur",
+      "film"
+    ]
+  },
+  {
+    "label": "laissez la police faire son travail [EN]",
+    "src": "laissez-la-police-faire-son-travail-en.mp3",
+    "categories": [
+      "la cité de la peur",
+      "film"
+    ]
+  },
+  {
+    "label": "laissez la police faire son travail [RU]",
+    "src": "laissez-la-police-faire-son-travail-ru.mp3",
+    "categories": [
+      "la cité de la peur",
+      "film"
+    ]
+  },
+  {
+    "label": "décapité, vidé, plumé",
+    "src": "oss-117-decapite-vide-plume.mp3",
+    "categories": [
+      "oss117",
+      "film"
+    ]
+  },
+  {
+    "label": "pas commencer à jouer avec mes couilles",
+    "src": "va-pas-falloir-jouer-avec-mes-couilles.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "asseyez-vous plutot...",
+    "src": "Tabouret.mp3",
+    "categories": []
+  },
+  {
+    "label": "le caca des pigeons c'est caca",
+    "src": "le-caca-des-pigeons.mp3",
+    "categories": [
+      "kaamelott"
+    ]
+  },
+  {
+    "label": "à roulettes",
+    "src": "a_roulettes.mp3",
+    "categories": [
+      "kaamelott"
+    ]
+  },
+  {
+    "label": "ah nickel",
+    "src": "ah nickel.mp3",
+    "categories": []
+  },
+  {
+    "label": "tu vas repartir direct dans le cosmos encule",
+    "src": "cosmos encule.mp3",
+    "categories": []
+  },
+  {
+    "label": "desire-moi",
+    "src": "desire-moi.mp3",
+    "categories": []
+  },
+  {
+    "label": "vous vous foutez de notre gueule",
+    "src": "foutez gueule.mp3",
+    "categories": []
+  },
+  {
+    "label": "jvais le faire",
+    "src": "jvais le faire.mp3",
+    "categories": []
+  },
+  {
+    "label": "c'est de la piquette jack",
+    "src": "piquette jack.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "t'es mauvais jack",
+    "src": "t'es mauvais.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "coup de polish",
+    "src": "polish.mp3",
+    "categories": [
+      "oss117",
+      "film"
+    ]
+  },
+  {
+    "label": "j'ai faim",
+    "src": "jai-faim.mp3",
+    "categories": [
+      "film"
+    ]
+  },
+  {
+    "label": "arretez de gueuler comme un con",
+    "src": "ah_mais_arretez_de_gueuler_comme_un_con.mp3",
+    "categories": [
+      "kaamelott"
+    ]
+  },
+  {
+    "label": "je mets mon doigt",
+    "src": "je mets mon doigt.mp3",
+    "categories": [
+      "tv",
+      "maïté"
+    ]
+  },
+  {
+    "label": "je lui suce le derrière",
+    "src": "je lui suce le derrière.mp3",
+    "categories": [
+      "tv",
+      "maïté"
+    ]
+  },
+  {
+    "label": "liberté de penser",
+    "src": "liberté de penser.mp3",
+    "categories": [
+      "Les inconnus"
+    ]
+  },
+  {
+    "label": "tu te calme martine",
+    "src": "tu-te-calme-martine.mp3",
+    "categories": [
+      "humoriste"
+    ]
+  },
+  {
+    "label": "quelle indignité",
+    "src": "sarkozy-quelle-indignite.mp3",
+    "categories": [
+      "politique"
+    ]
+  },
+  {
+    "label": "il est content",
+    "src": "il-est-content.mp3",
+    "categories": [
+      "humoriste"
+    ]
+  },
+  {
+    "label": "il a un ordinateur il est content",
+    "src": "il-a-un-ordi-il-est-content.mp3",
+    "categories": [
+      "humoriste"
+    ]
+  },
+  {
+    "label": "il a fait sa blague de merde",
+    "src": "blague-de-merde.mp3",
+    "categories": [
+      "humoriste"
+    ]
+  },
+  {
+    "label": "faut pas respirer la compote",
+    "src": "faut-pas-respirer-la-compote.mp3",
+    "categories": [
+      "kaamelott"
+    ]
+  },
+  {
+    "label": "mais oui c'est clair",
+    "src": "mais-oui-cest-clair-by-eddy-malou.mp3",
+    "categories": [
+      "eddy malou"
+    ]
+  },
+  {
+    "label": "s'agirait de grandir",
+    "src": "sagirait-de-grandir.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "c'est honteux",
+    "src": "cest-honteux.mp3",
+    "categories": [
+      "honteux",
+      "tv"
+    ]
+  },
+  {
+    "label": "mais c'était sur",
+    "src": "mais-cetait-sur-en-fait.mp3",
+    "categories": [
+      "honteux"
+    ]
+  },
+  {
+    "label": "faisons comme ça",
+    "src": "daccord-faisons-comme-ca.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "ça me sert à rien",
+    "src": "ca-me-sert-a-rien.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "comme tu voudras",
+    "src": "comme-tu-voudras.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "les calculs sont pas bons",
+    "src": "les-calculs-sont-pas-bons.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "si c'est rigolo",
+    "src": "oss-117-oh-si-cest-rigolo.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "je ne crois pas non",
+    "src": "oss-117-je-ne-crois-pas-non-pas-envie.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "ça va bien se passer",
+    "src": "ne-tinquiete-pas-ca-va-bien-se-passer.mp3",
+    "categories": []
+  },
+  {
+    "label": "on en reparlera",
+    "src": "on-en-reparlera.mp3",
+    "categories": [
+      "oss117"
+    ]
+  },
+  {
+    "label": "le sang de tes morts",
+    "src": "le-sang.mp3",
+    "categories": [
+      "gitan"
+    ]
+  },
+  {
+    "label": "je suis l'aigle",
+    "src": "je-suis-laigle.mp3",
+    "categories": [
+      "covid",
+      "pedo-satanique"
+    ]
+  },
+  {
+    "label": "rituel pedo-satanique",
+    "src": "rituel-pedo-satanique.mp3",
+    "categories": [
+      "covid",
+      "pedo-satanique"
+    ]
+  },
+  {
+    "label": "franc-maçons pedo-criminels",
+    "src": "franc-maçons pedo-criminels.mp3",
+    "categories": [
+      "covid",
+      "pedo-satanique"
+    ]
+  },
+  {
+    "label": "ouh la la c'est la décadence",
+    "src": "decadence.mp3",
+    "categories": [
+      "homophobie"
+    ]
+  },
+  {
+    "label": "c'est contre nature",
+    "src": "contre-nature.mp3",
+    "categories": [
+      "homophobie"
+    ]
+  },
+  {
+    "label": "un homme m'a appris à tricoter",
+    "src": "homme-tricot.mp3",
+    "categories": [
+      "homophobie"
+    ]
+  },
+  {
+    "label": "la colère de dieu",
+    "src": "colere-dieu.mp3",
+    "categories": [
+      "homophobie"
+    ]
+  },
+  {
+    "label": "bravo la caméra nils",
+    "src": "ah-bravo-nils.mp3",
+    "categories": [
+      "insulte"
+    ]
+  },
+  {
+    "label": "génial",
+    "src": "genial.mp3",
+    "categories": [
+      "insulte"
+    ]
+  },
+  {
+    "label": "sale petit con",
+    "src": "sale-petit-con.mp3",
+    "categories": [
+      "insulte"
+    ]
+  },
+  {
+    "label": "aie coup dur",
+    "src": "coup-dur-pour-guillaume.mp3",
+    "categories": [
+      "tv"
+    ]
+  },
+  {
+    "label": "mais si je suis très net",
+    "src": "mais-si-je-suis-net.mp3",
+    "categories": [
+      "drogué"
+    ]
+  },
+  {
+    "label": "mais j'ai rien pris",
+    "src": "rien-pris.mp3",
+    "categories": [
+      "drogué"
+    ]
+  },
+  {
+    "label": "popopo",
+    "src": "popopo.mp3",
+    "categories": [
+      "Antoine daniel"
+    ]
+  },
+  {
+    "label": "je prends des précautions",
+    "src": "precaution.mp3",
+    "categories": [
+      "drogué"
+    ]
+  },
+  {
+    "label": "salut mon pote",
+    "src": "salut-mon-pote.mp3",
+    "categories": [
+      "Michel Drucker"
+    ]
+  },
+  {
+    "label": "c'est pas faux",
+    "src": "cest-pas-faux.mp3",
+    "categories": [
+      "Kaamelott"
+    ]
+  },
+  {
+    "label": "ça c'est ma bite",
+    "src": "ca-c-ma-bite.mp3",
+    "categories": [
+      "Les nuls"
+    ]
+  },
+  {
+    "label": "entre les poils et les couilles",
+    "src": "entre-poil-et-couilles.mp3",
+    "categories": [
+      "Les nuls"
+    ]
+  },
+  {
+    "label": "ma bite c'est du béton",
+    "src": "ma-bite-du-beton.mp3",
+    "categories": [
+      "Les nuls"
+    ]
+  },
+  {
+    "label": "bander dans la morgue",
+    "src": "bander-morgue.mp3",
+    "categories": []
+  },
+  {
+    "label": "combien ???",
+    "src": "combien.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "ok lets go",
+    "src": "ok-lets-go.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "non (mario)",
+    "src": "mario-non.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "ah oui oui oui",
+    "src": "julien-lepers-ah-oui.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "monster kill",
+    "src": "monster-kill.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "ici on récolte tout le sel",
+    "src": "le-sel.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "énorme",
+    "src": "enorme-jamy.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "suspense (révélation)",
+    "src": "suspense.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "put the coconut down",
+    "src": "put-the-coconut-down-now.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "ok SII",
+    "src": "ok-sii.mp3",
+    "categories": [
+      "sii"
+    ]
+  },
+  {
+    "label": "tu crois que c'est du respect ?",
+    "src": "respect.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "rires (sitcom)",
+    "src": "sitcom-rires.mp3",
+    "categories": [
+      "react"
+    ]
+  },
+  {
+    "label": "bruit enervant",
+    "src": "bruit-enervant.mp3",
+    "categories": [
+      "moi-moche",
+      "bruit"
+    ]
+  },
+  {
+    "label": "on va manger des chips",
+    "src": "on-va-manger-des-chips.mp3",
+    "categories": [
+      "classe américaine",
+      "film"
+    ]
+  },
+  {
+    "label": "dix fois plus de classe",
+    "src": "jai-connu-un-mec-de-droite-une-fois-il-avait-dix-fois-plus-de-classe.mp3",
+    "categories": [
+      "classe américaine",
+      "film"
+    ]
+  },
+  {
+    "label": "on l'a retrouvé assassiné",
+    "src": "on-la-retrouve-assassine.mp3",
+    "categories": [
+      "classe américaine",
+      "film"
+    ]
+  },
+  {
+    "label": "tu fais la tronche ou quoi ?",
+    "src": "tu-fais-la-tronche.mp3",
+    "categories": [
+      "classe américaine",
+      "film"
+    ]
+  },
+  {
+    "label": "a la ferme ta gueule",
+    "src": "a-la-ferme-ta-gueule.mp3",
+    "categories": [
+      "classe américaine",
+      "film"
+    ]
+  },
+  {
+    "label": "je suis surpuissant",
+    "src": "surpuissant.mp3",
+    "categories": [
+      "classe américaine",
+      "film"
+    ]
+  },
+  {
+    "label": "propos intolérables",
+    "src": "pas-de-tolerance.mp3",
+    "categories": [
+      "classe américaine",
+      "film",
+      "racisme"
+    ]
+  },
+  {
+    "label": "compte la dessus et bois de l'eau",
+    "src": "compte-la-dessus-et-bois-de-leau.mp3",
+    "categories": [
+      "nanar"
+    ]
+  },
+  {
+    "label": "ta gueule",
+    "src": "ta-gueule.mp3",
+    "categories": [
+      "react",
+      "les kassos"
+    ]
+  },
+  {
+    "label": "t'es different",
+    "src": "tes-different.mp3",
+    "categories": [
+      "racisme"
+    ]
+  },
+  {
+    "label": "clic clic",
+    "src": "clic-clic.mp3",
+    "categories": [
+      "rap tout terrain"
+    ]
+  },
+  {
+    "label": "oui",
+    "src": "didier-drogba-oui.mp3",
+    "categories": [
+      "didier drogba"
+    ]
+  },
+  {
+    "label": "j'ecoute",
+    "src": "jecoute.mp3",
+    "categories": [
+      "oss117",
+      "film"
+    ]
+  }
+]

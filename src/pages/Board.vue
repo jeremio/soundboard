@@ -1,7 +1,7 @@
 <template>
   <SearchTools
     v-model:search="search"
-    v-model:selectedCategory="selectedCategory"
+    v-model:selected-category="selectedCategory"
     :categories="categories"
   />
   <Grid

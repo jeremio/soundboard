@@ -1,9 +1,9 @@
-import { URL, fileURLToPath } from 'node:url'
+import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 // import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import { defineConfig } from 'vite'
 import Inspect from 'vite-plugin-inspect'
 import VueDevTools from 'vite-plugin-vue-devtools'
 

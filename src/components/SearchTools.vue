@@ -1,12 +1,12 @@
 <template>
   <div class="search-tools">
-    <input v-model="search" type="search" placeholder="rechercher">
-    <select v-model="selectedCategory">
+    <input v-model="search" type="search" placeholder="rechercher" aria-label="rechercher">
+    <select v-model="selectedCategory" aria-label="categories">
       <option value="tous">
         tous
       </option>
       <option
-        v-for="category in props.categories"
+        v-for="category in categories"
         :key="category"
         :value="category"
       >
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   categories: string[]
 }>()
 

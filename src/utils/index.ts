@@ -1,4 +1,4 @@
-import type { MySound } from '~/types/MySound'
+import type { MySound, MySoundWithoutId } from '~/types/MySound'
 
 export function assignEmptyCategory(sounds: MySound[]): MySound[] {
   return sounds.map((sound) => {
@@ -9,7 +9,7 @@ export function assignEmptyCategory(sounds: MySound[]): MySound[] {
   })
 }
 
-export function assignIds(sounds: MySound[]): MySound[] {
+export function assignIds(sounds: MySoundWithoutId[]): MySound[] {
   return sounds.map((sound, index) => ({ ...sound, id: index }))
 }
 

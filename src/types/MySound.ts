@@ -4,3 +4,5 @@ export interface MySound {
   label: string
   categories: string[]
 }
+
+export type MySoundWithoutId = Omit<MySound, 'id'>

@@ -1,10 +1,12 @@
 <template>
   <SearchTools
+    v-if="categories.length > 0"
     v-model:search="search"
     v-model:selected-category="selectedCategory"
     :categories="categories"
   />
   <Grid
+    v-if="allSounds.length > 0"
     :search="search"
     :selected-category="selectedCategory"
     :all-sounds="allSounds"
@@ -13,7 +15,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import sounds from '~/assets/sounds.json'
 import Grid from '~/components/Grid.vue'
+
 import SearchTools from '~/components/SearchTools.vue'
 
 import type { MySound } from '~/types/MySound'
@@ -25,26 +29,11 @@ const categories = ref<string[]>([])
 const selectedCategory = ref('tous')
 const search = ref('')
 
-async function api<T>(url: string): Promise<T> {
-  const response = await fetch(url)
-  if (!response.ok)
-    throw new Error(`HTTP error! status: ${response.status}`)
+onMounted(() => {
+  const soundsWithIds: MySound[] = assignIds(sounds)
+  const soundsWithIdsAndCategories: MySound[] = assignEmptyCategory(soundsWithIds)
 
-  const data = await response.json()
-  return data as T
-}
-
-onMounted(async () => {
-  try {
-    const response = await api<MySound[]>('/sounds.json')
-    const soundsWithIds = assignIds(response)
-    const soundsWithIdsAndCategories = assignEmptyCategory(soundsWithIds)
-
-    allSounds.value = sortArrayByField(soundsWithIdsAndCategories, 'label')
-    categories.value = getCategories(soundsWithIdsAndCategories).sort()
-  }
-  catch (error) {
-    console.error('Error fetching sounds:', error)
-  }
+  allSounds.value = sortArrayByField(soundsWithIdsAndCategories, 'label')
+  categories.value = getCategories(soundsWithIdsAndCategories).sort()
 })
 </script>

@@ -32,7 +32,7 @@ defineProps<{
   sound: MySound
 }>()
 
-const isPlaying = ref(false)
+const isPlaying = shallowRef(false)
 
 function play(id: string) {
   const audioElement = document.getElementById(id) as HTMLAudioElement

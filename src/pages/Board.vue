@@ -23,11 +23,11 @@ import SearchTools from '~/components/SearchTools.vue'
 import type { MySound } from '~/types/MySound'
 import { assignEmptyCategory, assignIds, getCategories, sortArrayByField } from '~/utils'
 
-const allSounds = ref<MySound[]>([])
-const categories = ref<string[]>([])
+const allSounds = shallowRef<MySound[]>([])
+const categories = shallowRef<string[]>([])
 
-const selectedCategory = ref('tous')
-const search = ref('')
+const selectedCategory = shallowRef('tous')
+const search = shallowRef('')
 
 onMounted(() => {
   const soundsWithIds: MySound[] = assignIds(sounds)

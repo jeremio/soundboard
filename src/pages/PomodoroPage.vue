@@ -98,13 +98,23 @@ function formatTime(time) {
 }
 
 function playSound() {
-  if (soundEnabled.value && audioRefs[currentMode.value]) {
-    const audio = audioRefs[currentMode.value]
-    audio.currentTime = 0
-    audio.play().catch((error) => {
-      console.error(`Erreur lors de la lecture du son ${currentMode.value}:`, error)
-    })
-  }
+  return new Promise((resolve) => {
+    if (soundEnabled.value && audioRefs[currentMode.value]) {
+      const audio = audioRefs[currentMode.value]
+      audio.currentTime = 0
+      audio.play()
+        .then(() => {
+          audio.addEventListener('ended', resolve, { once: true })
+        })
+        .catch((error) => {
+          console.error(`Erreur lors de la lecture du son ${currentMode.value}:`, error)
+          resolve() // En cas d'erreur, on résout quand même la promesse
+        })
+    }
+    else {
+      resolve() // Si le son n'est pas activé, on résout immédiatement la promesse
+    }
+  })
 }
 
 // function testCurrentSound() {
@@ -139,10 +149,14 @@ watch(isActive, (newValue) => {
     interval = setInterval(() => {
       if (seconds.value === 0) {
         if (minutes.value === 0) {
+          clearInterval(interval)
           isActive.value = false
-          playSound()
-          alert('Temps écoulé !')
-          resetTimer()
+
+          // Utilisez async/await pour jouer le son avant l'alerte
+          playSound().then(() => {
+            alert('Temps écoulé !')
+            resetTimer()
+          })
           return
         }
         minutes.value--

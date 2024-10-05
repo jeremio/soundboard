@@ -289,7 +289,7 @@
     ]
   },
   {
-    "label": "laissez la police faire son travail [EN]",
+    "label": "laissez la police faire son travail [en]",
     "src": "laissez-la-police-faire-son-travail-en.mp3",
     "categories": [
       "la cité de la peur",
@@ -297,7 +297,7 @@
     ]
   },
   {
-    "label": "laissez la police faire son travail [RU]",
+    "label": "laissez la police faire son travail [ru]",
     "src": "laissez-la-police-faire-son-travail-ru.mp3",
     "categories": [
       "la cité de la peur",
@@ -321,7 +321,7 @@
   },
   {
     "label": "asseyez-vous plutot...",
-    "src": "Tabouret.mp3",
+    "src": "tabouret.mp3",
     "categories": []
   },
   {
@@ -419,7 +419,7 @@
     "label": "liberté de penser",
     "src": "liberté de penser.mp3",
     "categories": [
-      "Les inconnus"
+      "les inconnus"
     ]
   },
   {
@@ -652,7 +652,7 @@
     "label": "popopo",
     "src": "popopo.mp3",
     "categories": [
-      "Antoine daniel"
+      "antoine daniel"
     ]
   },
   {
@@ -666,35 +666,35 @@
     "label": "salut mon pote",
     "src": "salut-mon-pote.mp3",
     "categories": [
-      "Michel Drucker"
+      "michel drucker"
     ]
   },
   {
     "label": "c'est pas faux",
     "src": "cest-pas-faux.mp3",
     "categories": [
-      "Kaamelott"
+      "kaamelott"
     ]
   },
   {
     "label": "ça c'est ma bite",
     "src": "ca-c-ma-bite.mp3",
     "categories": [
-      "Les nuls"
+      "les nuls"
     ]
   },
   {
     "label": "entre les poils et les couilles",
     "src": "entre-poil-et-couilles.mp3",
     "categories": [
-      "Les nuls"
+      "les nuls"
     ]
   },
   {
     "label": "ma bite c'est du béton",
     "src": "ma-bite-du-beton.mp3",
     "categories": [
-      "Les nuls"
+      "les nuls"
     ]
   },
   {
@@ -766,7 +766,7 @@
     ]
   },
   {
-    "label": "ok SII",
+    "label": "ok sii",
     "src": "ok-sii.mp3",
     "categories": [
       "sii"
@@ -864,13 +864,6 @@
     "categories": [
       "react",
       "les kassos"
-    ]
-  },
-  {
-    "label": "t'es different",
-    "src": "tes-different.mp3",
-    "categories": [
-      "racisme"
     ]
   },
   {

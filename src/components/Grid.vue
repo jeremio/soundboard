@@ -1,14 +1,11 @@
 <template>
   <div class="grid">
-    <template
-      v-for="(sound) in allSounds"
+    <Bouton
+      v-for="sound in categorizedSounds"
+      v-show="matchesSearch(sound)"
       :key="sound.id"
-    >
-      <Bouton
-        v-show="showSoundOnSelect(sound)"
-        :sound="sound"
-      />
-    </template>
+      :sound="sound"
+    />
   </div>
 </template>
 
@@ -22,23 +19,22 @@ const props = defineProps<{
   selectedCategory: string
 }>()
 
-function showSoundOnSelect(sound: MySound) {
-  if (props.search !== '')
-    return inputIntoSelectOrNot(sound)
-  else if (props.selectedCategory === 'tous')
+// Filtre par catégorie - ce calcul est moins fréquent
+const categorizedSounds = computed(() => {
+  if (props.selectedCategory === 'tous')
+    return props.allSounds
+  return props.allSounds.filter(sound =>
+    sound.categories.includes(props.selectedCategory),
+  )
+})
+
+// Utilise v-show pour le filtrage par recherche - plus réactif
+function matchesSearch(sound: MySound) {
+  if (props.search === '')
     return true
-  else
-    return sound.categories.includes(props.selectedCategory)
-}
 
-function inputIntoSelectOrNot(sound: MySound) {
-  const isSearchMatch = (field: string) => field.toLowerCase().includes(props.search.toLowerCase())
-  const isCategoryMatch = () => sound.categories.includes(props.selectedCategory)
-
-  if (props.selectedCategory !== 'tous')
-    return isCategoryMatch() && (isSearchMatch(sound.label) || isSearchMatch(sound.src))
-  else
-    return isSearchMatch(sound.label) || isSearchMatch(sound.src)
+  const searchLower = props.search.toLowerCase()
+  return sound.label.toLowerCase().includes(searchLower)
 }
 </script>
 

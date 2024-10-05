@@ -13,6 +13,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: #e8e9ee;
   color: #2c3e50;
+  min-height: 100vh;
   > div {
     text-align: center;
   }

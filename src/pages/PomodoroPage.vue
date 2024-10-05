@@ -1,44 +1,70 @@
 <template>
-  <div class="pomodoro-timer">
-    <h1 class="title">
-      <span class="icon">⏱️</span>
+  <div class="pomodoro-timer" role="application" aria-label="Minuteur Pomodoro">
+    <h1 id="timer-title" class="title">
+      <span class="icon" aria-hidden="true">⏱️</span>
       Pomodoro Timer
     </h1>
 
-    <div class="timer-modes">
+    <div class="timer-modes" role="radiogroup" aria-labelledby="timer-title">
       <button
         v-for="mode in modes"
         :key="mode.name"
+        role="radio"
+        :aria-checked="currentMode === mode.name"
+        :aria-label="mode.ariaLabel"
         :class="{ active: currentMode === mode.name }"
         @click="changeMode(mode)"
       >
-        {{ mode.label }}
+        {{ mode.name }}
       </button>
     </div>
 
-    <div class="timer-display">
+    <div
+      class="timer-display"
+      role="timer"
+      aria-live="polite"
+      :aria-label="getAriaTimeString()"
+    >
       <div class="time">
-        {{ formatTime(minutes) }}:{{ formatTime(seconds) }}
+        {{ getTimeString() }}
       </div>
     </div>
 
     <div class="controls">
-      <button :class="{ running: isActive }" @click="toggleTimer">
+      <button
+        :class="{ running: isActive }"
+        :aria-label="isActive ? 'Mettre en pause' : 'Démarrer'"
+        @click="isActive ? pauseTimer() : startTimer()"
+      >
         {{ isActive ? 'Pause' : 'Démarrer' }}
       </button>
-      <button class="reset" @click="resetTimer">
+      <button
+        class="reset"
+        aria-label="Réinitialiser le minuteur"
+        @click="resetTimer"
+      >
         Réinitialiser
       </button>
     </div>
 
     <div class="sound-controls">
       <label class="sound-toggle">
-        <input v-model="soundEnabled" type="checkbox">
+        <input
+          v-model="soundEnabled"
+          type="checkbox"
+          aria-label="Activer ou désactiver le son"
+        >
         Son activé
       </label>
-      <!--      <button class="test-sound" @click="testCurrentSound"> -->
-      <!--        Tester le son -->
-      <!--      </button> -->
+    </div>
+
+    <!-- Élément pour les annonces d'accessibilité -->
+    <div
+      role="status"
+      aria-live="polite"
+      class="sound-controls"
+    >
+      {{ currentAnnouncement }}
     </div>
 
     <!-- Elements audio pour chaque type de minuteur -->
@@ -50,36 +76,52 @@
 </template>
 
 <script setup>
-import pomodoroFinishedSound from '/sounds/travail-termine.mp3'
-import BreakFinishedSound from '/sounds/warcraft-3-humain-travail.mp3'
+import { useTimer } from './useTimer'
 
-const modes = [
-  {
-    name: 'pomodoro',
-    label: 'Pomodoro',
-    duration: 25,
-    sound: pomodoroFinishedSound,
-  },
-  {
-    name: 'shortBreak',
-    label: 'Pause courte',
-    duration: 5,
-    sound: BreakFinishedSound,
-  },
-  {
-    name: 'longBreak',
-    label: 'Pause longue',
-    duration: 15,
-    sound: BreakFinishedSound,
-  },
-]
+const {
+  isActive,
+  currentMode,
+  soundEnabled,
+  modes,
+  getTimeString,
+  getAriaTimeString,
+  startTimer,
+  pauseTimer,
+  resetTimer,
+  changeMode,
+} = useTimer()
 
-const minutes = ref(25)
-const seconds = ref(0)
-const isActive = ref(false)
-const currentMode = ref('pomodoro')
-const soundEnabled = ref(true)
-let interval = null
+// Gestion des annonces d'accessibilité
+const currentAnnouncement = ref('')
+let announcementTimeout
+
+function handleAnnouncement(event) {
+  currentAnnouncement.value = event.detail.message
+  if (event.detail.message === 'Temps écoulé !') {
+    playSound()
+  }
+  if (announcementTimeout)
+    clearTimeout(announcementTimeout)
+  announcementTimeout = setTimeout(() => {
+    currentAnnouncement.value = ''
+  }, 2000)
+}
+
+onMounted(() => {
+  window.addEventListener('timer-announcement', handleAnnouncement)
+
+  // Gestion des raccourcis clavier
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault()
+      isActive.value ? pauseTimer() : startTimer()
+    }
+    else if (e.code === 'KeyR') {
+      e.preventDefault()
+      resetTimer()
+    }
+  })
+})
 
 // Référence pour les éléments audio
 const audioRefs = {}
@@ -93,88 +135,18 @@ function setAudioRef(modeName) {
   }
 }
 
-function formatTime(time) {
-  return time.toString().padStart(2, '0')
-}
-
 function playSound() {
-  return new Promise((resolve) => {
-    if (soundEnabled.value && audioRefs[currentMode.value]) {
-      const audio = audioRefs[currentMode.value]
-      audio.currentTime = 0
-      audio.play()
-        .then(() => {
-          audio.addEventListener('ended', resolve, { once: true })
-        })
-        .catch((error) => {
-          console.error(`Erreur lors de la lecture du son ${currentMode.value}:`, error)
-          resolve() // En cas d'erreur, on résout quand même la promesse
-        })
-    }
-    else {
-      resolve() // Si le son n'est pas activé, on résout immédiatement la promesse
-    }
-  })
+  if (!soundEnabled.value || !audioRefs[currentMode.value])
+    return
+
+  const audio = audioRefs[currentMode.value]
+  audio.currentTime = 0
+
+  return audio.play()
+    .catch((error) => {
+      console.error(`Erreur lors de la lecture du son ${currentMode.value}:`, error)
+    })
 }
-
-// function testCurrentSound() {
-//   playSound()
-// }
-
-function changeMode(mode) {
-  if (isActive.value) {
-    if (!confirm('Le minuteur est en cours. Voulez-vous vraiment changer de mode ?')) {
-      return
-    }
-  }
-  currentMode.value = mode.name
-  minutes.value = mode.duration
-  seconds.value = 0
-  isActive.value = false
-}
-
-function toggleTimer() {
-  isActive.value = !isActive.value
-}
-
-function resetTimer() {
-  isActive.value = false
-  const currentModeData = modes.find(mode => mode.name === currentMode.value)
-  minutes.value = currentModeData.duration
-  seconds.value = 0
-}
-
-watch(isActive, (newValue) => {
-  if (newValue) {
-    interval = setInterval(() => {
-      if (seconds.value === 0) {
-        if (minutes.value === 0) {
-          clearInterval(interval)
-          isActive.value = false
-
-          // Utilisez async/await pour jouer le son avant l'alerte
-          playSound().then(() => {
-            alert('Temps écoulé !')
-            resetTimer()
-          })
-          return
-        }
-        minutes.value--
-        seconds.value = 59
-      }
-      else {
-        seconds.value--
-      }
-    }, 1000)
-  }
-  else {
-    clearInterval(interval)
-  }
-})
-
-onUnmounted(() => {
-  clearInterval(interval)
-})
 </script>
 
 <style scoped>
@@ -277,20 +249,5 @@ onUnmounted(() => {
   gap: 5px;
   cursor: pointer;
   font-size: 14px;
-}
-
-.test-sound {
-  padding: 5px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-  border-radius: 4px;
-  background-color: #757575;
-  color: white;
-  transition: background-color 0.3s;
-}
-
-.test-sound:hover {
-  background-color: #616161;
 }
 </style>

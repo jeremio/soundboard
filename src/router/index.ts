@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import BoardPage from '~/pages/BoardPage.vue'
-import PomodoroPage from '~/pages/PomodoroPage.vue'
 
 const routes = [
   {
@@ -12,7 +11,7 @@ const routes = [
   {
     path: '/pomodoro',
     name: 'pomodoro',
-    component: PomodoroPage,
+    component: () => import ('~/pages/PomodoroPage.vue'),
   },
 ]
 

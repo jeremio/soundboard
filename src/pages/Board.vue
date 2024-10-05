@@ -14,10 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
 import sounds from '~/assets/sounds.json'
-import Grid from '~/components/Grid.vue'
 
+import Grid from '~/components/Grid.vue'
 import SearchTools from '~/components/SearchTools.vue'
 
 import type { MySound } from '~/types/MySound'

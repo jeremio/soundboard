@@ -1,8 +1,7 @@
 import App from './App.vue'
 import router from './router'
 
-import '~/styles/reset.css'
-import '~/styles/style.css'
+import '~/styles/main.css'
 
 createApp(App)
   .use(router)

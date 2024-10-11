@@ -159,6 +159,7 @@ function playSound() {
 
 .title {
   font-size: 24px;
+  margin-top: 20px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;

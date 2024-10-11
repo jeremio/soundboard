@@ -1,16 +1,21 @@
 <template>
-  <SearchTools
-    v-if="categories.length > 0"
-    v-model:search="search"
-    v-model:selected-category="selectedCategory"
-    :categories="categories"
-  />
-  <Grid
-    v-if="allSounds.length > 0"
-    :search="search"
-    :selected-category="selectedCategory"
-    :all-sounds="allSounds"
-  />
+  <div class="board-container">
+    <SearchTools
+      v-if="categories.length > 0"
+      v-model:search="search"
+      v-model:selected-category="selectedCategory"
+      :categories="categories"
+      class="search-tools"
+    />
+    <div class="grid-container">
+      <Grid
+        v-if="allSounds.length > 0"
+        :search="search"
+        :selected-category="selectedCategory"
+        :all-sounds="allSounds"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -36,3 +41,23 @@ onMounted(() => {
   categories.value = getCategories(soundsWithIdsAndCategories).sort()
 })
 </script>
+
+<style scoped>
+.board-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.search-tools {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #00c6bf;
+}
+
+.grid-container {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+</style>

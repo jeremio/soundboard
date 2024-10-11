@@ -32,7 +32,7 @@ const buttonText = computed(() => {
 
 .corner-button {
   padding: 10px 15px;
-  background-color: #4CAF50;
+  background-color: #7fd1ae;
   color: white;
   border: none;
   border-radius: 4px;

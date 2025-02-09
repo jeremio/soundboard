@@ -42,8 +42,8 @@ function matchesSearch(sound: MySound) {
 .grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 10px;
+  gap: 4px;
+  padding: 4px;
   width: 100%;
   box-sizing: border-box;
 }

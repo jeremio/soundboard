@@ -19,12 +19,12 @@
 </template>
 
 <script setup lang="ts">
-import sounds from '~/assets/sounds.json'
-
-import Grid from '~/components/Grid.vue'
-import SearchTools from '~/components/SearchTools.vue'
-
 import type { MySound } from '~/types/MySound'
+
+import sounds from '~/assets/sounds.json'
+import Grid from '~/components/Grid.vue'
+
+import SearchTools from '~/components/SearchTools.vue'
 import { assignEmptyCategory, assignIds, getCategories, sortArrayByField } from '~/utils'
 
 const allSounds = shallowRef<MySound[]>([])

@@ -44,8 +44,8 @@
 </template>
 
 <script setup lang="ts">
-import copySVG from '~/assets/copy.svg'
 import type { MySound } from '~/types/MySound'
+import copySVG from '~/assets/copy.svg'
 
 const props = defineProps<{
   sound: MySound

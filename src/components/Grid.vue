@@ -10,8 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import Bouton from '~/components/Bouton.vue'
 import type { MySound } from '~/types/MySound'
+import Bouton from '~/components/Bouton.vue'
 
 const props = defineProps<{
   allSounds: MySound[]

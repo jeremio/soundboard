@@ -4,14 +4,51 @@
     <div class="controls">
       <label for="bpm">BPM:</label>
       <input id="bpm" v-model.number="bpm" type="number" min="1" max="300" :disabled="isRunning">
-      <button @click="toggleMetronome">
+      <button @click="toggleMetronome" class="toggle-button">
         {{ isRunning ? 'Arrêter' : 'Démarrer' }}
       </button>
+    </div>
+    <div class="slider-container">
+      <input
+        type="range"
+        v-model.number="bpm"
+        min="1"
+        max="300"
+        class="tempo-slider"
+        :disabled="isRunning"
+      >
+      <div class="slider-labels">
+        <span>1</span>
+        <span>60</span>
+        <span>120</span>
+        <span>180</span>
+        <span>240</span>
+        <span>300</span>
+      </div>
+    </div>
+    <div class="presets-container">
+      <div class="preset-label">Préréglages:</div>
+      <div class="preset-buttons">
+        <button
+          v-for="preset in tempoPresets"
+          :key="preset.name"
+          @click="setTempo(preset.bpm)"
+          :disabled="isRunning"
+          class="preset-button"
+          :class="{ 'active': isActivePreset(preset.bpm) }"
+        >
+          {{ preset.name }}
+        </button>
+      </div>
     </div>
     <div class="option-controls">
       <label class="checkbox-container">
         <input type="checkbox" v-model="minuteRepeat" :disabled="isRunning">
         <span class="checkbox-text">Répétition par minute</span>
+      </label>
+      <label class="checkbox-container" v-if="minuteRepeat">
+        <input type="checkbox" v-model="accentFirstBeat" :disabled="isRunning">
+        <span class="checkbox-text">Accentuer le premier temps</span>
       </label>
     </div>
     <div v-if="visualBeat" class="visual-beat" :class="{ 'beat-active': showVisualBeat, 'beat-first': showFirstBeat }" />
@@ -28,8 +65,33 @@ const visualBeat = ref<boolean>(true) // Option pour activer/désactiver l'indic
 const showVisualBeat = ref<boolean>(false) // Pour l'animation de l'indicateur visuel
 const showFirstBeat = ref<boolean>(false) // Pour l'animation du premier temps
 const minuteRepeat = ref<boolean>(false) // Option pour la répétition par minute
+const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier temps (activée par défaut)
 const errorMessage = ref<string>('')
 let beatCount = 0 // Compteur de battements pour le mode répétition par minute
+
+// Définition des préréglages de tempo standards
+const tempoPresets = [
+  { name: 'Largo', bpm: 50 },
+  { name: 'Adagio', bpm: 70 },
+  { name: 'Andante', bpm: 90 },
+  { name: 'Moderato', bpm: 112 },
+  { name: 'Allegro', bpm: 140 },
+  { name: 'Vivace', bpm: 170 },
+  { name: 'Presto', bpm: 190 }
+]
+
+// Fonction pour définir le tempo à partir d'un préréglage
+function setTempo(value: number) {
+  if (!isRunning.value) {
+    bpm.value = value
+  }
+}
+
+// Fonction pour vérifier si un préréglage est actif
+function isActivePreset(presetBpm: number): boolean {
+  // Tolérance de ±2 BPM pour considérer qu'un préréglage est actif
+  return Math.abs(bpm.value - presetBpm) <= 2
+}
 
 let audioContext: AudioContext | null = null
 let timerId: number | null = null
@@ -97,7 +159,8 @@ function scheduler() {
 
       // Si on est proche du début d'une minute (moins de 0.1 seconde) ou c'est le premier battement
       if (beatTimeInMinute < 0.1 || beatCount === 0) {
-        isFirstBeat = true
+        // On n'accentue le premier temps que si l'option est activée
+        isFirstBeat = accentFirstBeat.value
         beatCount = 1
       } else {
         beatCount++
@@ -203,7 +266,7 @@ onUnmounted(() => {
 .controls {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .controls label {
@@ -226,7 +289,7 @@ onUnmounted(() => {
   color: #999;
 }
 
-.controls button {
+.toggle-button {
   padding: 10px 20px;
   font-size: 1.1em;
   color: white;
@@ -237,18 +300,116 @@ onUnmounted(() => {
   transition: background-color 0.3s ease;
 }
 
-.controls button:hover {
+.toggle-button:hover {
   background-color: #0056b3;
 }
 
-.controls button:active {
+.toggle-button:active {
   background-color: #004085;
+}
+
+.toggle-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.slider-container {
+  width: 90%;
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+.tempo-slider {
+  width: 100%;
+  height: 10px;
+  appearance: none;
+  background: #ddd;
+  outline: none;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  transition: opacity 0.2s;
+}
+
+.tempo-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+}
+
+.tempo-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #007bff;
+  cursor: pointer;
+}
+
+.tempo-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: #666;
+}
+
+.presets-container {
+  width: 90%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.preset-label {
+  font-size: 1em;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.preset-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.preset-button {
+  padding: 8px 14px;
+  font-size: 0.9em;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-button:hover {
+  background-color: #e0e0e0;
+}
+
+.preset-button.active {
+  background-color: #d7ebff;
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.preset-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .option-controls {
   margin-bottom: 15px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
   align-items: center;
+  justify-content: center;
 }
 
 .checkbox-container {

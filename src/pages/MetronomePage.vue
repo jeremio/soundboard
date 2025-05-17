@@ -3,7 +3,7 @@
     <h1>Métronome</h1>
     <div class="controls">
       <label for="bpm">BPM:</label>
-      <input id="bpm" v-model.number="bpm" type="number" min="1" max="300" :disabled="isRunning">
+      <input id="bpm" v-model.number="bpm" type="number" min="2" step="2" max="300" :disabled="isRunning">
       <button class="toggle-button" @click="toggleMetronome">
         {{ isRunning ? 'Arrêter' : 'Démarrer' }}
       </button>
@@ -12,7 +12,8 @@
       <input
         v-model.number="bpm"
         type="range"
-        min="1"
+        min="2"
+        step="2"
         max="300"
         class="tempo-slider"
         :disabled="isRunning"

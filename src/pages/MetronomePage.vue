@@ -221,6 +221,7 @@ function scheduler() {
 
   const currentTime = audioContext.currentTime
 
+
   // Mise à jour du temps écoulé de manière plus précise
   if (!minuteRepeat.value) {
     timeInProgress.value = Math.floor(currentTime - startTime)
@@ -271,8 +272,8 @@ function toggleMetronome() {
 
 // S'assurer que le tempo est dans les limites
 watch(bpm, (newValue) => {
-  if (newValue < 1) {
-    bpm.value = 1
+  if (newValue < 2) {
+    bpm.value = 2
   }
   else if (newValue > 300) {
     bpm.value = 300

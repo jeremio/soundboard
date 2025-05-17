@@ -13,6 +13,11 @@ const routes = [
     name: 'pomodoro',
     component: () => import ('~/pages/PomodoroPage.vue'),
   },
+  {
+    path: '/metronome',
+    name: 'Metronome',
+    component: () => import ('~/pages/MetronomePage.vue'),
+  },
 ]
 
 const router = createRouter({

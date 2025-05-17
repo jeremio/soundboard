@@ -87,7 +87,6 @@ const minuteRepeat = ref<boolean>(false) // Option pour la répétition
 const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier temps (activée par défaut)
 const errorMessage = ref<string>('')
 const timeInProgress = ref<number>(0) // Temps en cours en secondes
-let beatCount = 0 // Compteur de battements pour le mode répétition par minute
 let startTime = 0 // Temps de démarrage du métronome
 
 // Définition des préréglages de tempo standards
@@ -153,7 +152,6 @@ async function start() {
       audioContext = await createAudioContext()
     }
 
-    beatCount = 0
     nextBeatTime = audioContext.currentTime + 0.1
     startTime = audioContext.currentTime // Initialiser le temps de démarrage
     timeInProgress.value = 0 // Réinitialiser le temps en cours
@@ -240,12 +238,8 @@ function scheduler() {
       const currentBeatTime = nextBeatTime
       const beatTimeInMinute = currentBeatTime % 60 // Position dans la minute courante
 
-      if (beatTimeInMinute < 0.1 || beatCount === 0) {
+      if (beatTimeInMinute < 0.1) {
         isFirstBeat = accentFirstBeat.value
-        beatCount = 1
-      }
-      else {
-        beatCount++
       }
     }
 

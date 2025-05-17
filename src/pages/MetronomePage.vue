@@ -60,7 +60,7 @@
           {{ bpm }} BPM
         </div>
         <div v-if="isRunning && !minuteRepeat" class="time-remaining">
-          Temps restant: {{ remainingTime }}s
+          Temps: {{ timeInProgress }}s / 60s
         </div>
         <div class="pendulum-track">
           <div class="pendulum-marker" :class="{ 'position-left': showVisualBeat, 'position-right': !showVisualBeat, 'accent-beat': showFirstBeat }" />
@@ -83,10 +83,10 @@ const bpm = ref<number>(120)
 const isRunning = ref<boolean>(false)
 const showVisualBeat = ref<boolean>(false) // Pour l'animation du pendule (gauche/droite)
 const showFirstBeat = ref<boolean>(false) // Pour l'animation du premier temps
-const minuteRepeat = ref<boolean>(false) // Option pour la répétition par minute
+const minuteRepeat = ref<boolean>(false) // Option pour la répétition
 const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier temps (activée par défaut)
 const errorMessage = ref<string>('')
-const remainingTime = ref<number>(60) // Temps restant en secondes
+const timeInProgress = ref<number>(0) // Temps en cours en secondes
 let beatCount = 0 // Compteur de battements pour le mode répétition par minute
 let startTime = 0 // Temps de démarrage du métronome
 
@@ -101,16 +101,13 @@ const tempoPresets = [
   { name: 'Presto', bpm: 190 },
 ]
 
-// Fonction pour définir le tempo à partir d'un préréglage
 function setTempo(value: number) {
   if (!isRunning.value) {
     bpm.value = value
   }
 }
 
-// Fonction pour vérifier si un préréglage est actif
 function isActivePreset(presetBpm: number): boolean {
-  // Tolérance de ±2 BPM pour considérer qu'un préréglage est actif
   return Math.abs(bpm.value - presetBpm) <= 2
 }
 
@@ -120,7 +117,6 @@ let nextBeatTime: number = 0
 const scheduleAheadTime: number = 0.1 // (secondes) Planifier les battements un peu en avance
 const lookahead: number = 25.0 // (ms) Fréquence à laquelle le scheduler s'exécute
 
-// Création sécurisée de l'AudioContext
 function createAudioContext(): Promise<AudioContext> {
   return new Promise((resolve, reject) => {
     try {
@@ -160,7 +156,7 @@ async function start() {
     beatCount = 0
     nextBeatTime = audioContext.currentTime + 0.1
     startTime = audioContext.currentTime // Initialiser le temps de démarrage
-    remainingTime.value = 60 // Réinitialiser le temps restant
+    timeInProgress.value = 0 // Réinitialiser le temps en cours
     isRunning.value = true
     scheduler()
   }
@@ -170,7 +166,6 @@ async function start() {
   }
 }
 
-// Amélioration de la fonction scheduleBeat avec nettoyage des ressources
 function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
   if (!audioContext)
     return
@@ -204,7 +199,6 @@ function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
     osc.disconnect()
   }, (beatTime - audioContext.currentTime + 0.1) * 1000)
 
-  // Indication visuelle avec le pendule
   setTimeout(() => {
     if (isFirstBeat) {
       showFirstBeat.value = true
@@ -230,9 +224,7 @@ function scheduler() {
   // Vérifier s'il faut arrêter après une minute (si mode répétition désactivé)
   if (!minuteRepeat.value && startTime > 0) {
     const elapsedTime = currentTime - startTime
-    const timeRemaining = Math.max(0, 60 - Math.floor(elapsedTime))
-
-    remainingTime.value = timeRemaining
+    timeInProgress.value = Math.floor(elapsedTime)
 
     // Arrêter le métronome après 60 secondes si le mode répétition est désactivé
     if (elapsedTime >= 60) {
@@ -245,14 +237,10 @@ function scheduler() {
     let isFirstBeat = false
 
     if (minuteRepeat.value) {
-      // Pour le mode répétition par minute, on compte les battements
-      // et on considère le premier battement de chaque minute comme spécial
       const currentBeatTime = nextBeatTime
       const beatTimeInMinute = currentBeatTime % 60 // Position dans la minute courante
 
-      // Si on est proche du début d'une minute (moins de 0.1 seconde) ou c'est le premier battement
       if (beatTimeInMinute < 0.1 || beatCount === 0) {
-        // On n'accentue le premier temps que si l'option est activée
         isFirstBeat = accentFirstBeat.value
         beatCount = 1
       }
@@ -279,10 +267,7 @@ function stop() {
     clearTimeout(timerId)
     timerId = null
   }
-  // Réinitialiser le temps restant
-  remainingTime.value = 60
-  // Il n'est pas nécessaire d'arrêter l'audioContext lui-même,
-  // mais on s'assure que plus aucun son n'est planifié.
+  timeInProgress.value = 0
 }
 
 function toggleMetronome() {
@@ -303,14 +288,8 @@ watch(bpm, (newValue) => {
     bpm.value = 300
   }
   if (isRunning.value) {
-    // Si le métronome tourne, on peut ajuster le tempo en direct
-    // Pour une transition plus douce, on pourrait redémarrer avec le nouveau tempo
-    // ou ajuster le nextBeatTime plus finement.
-    // Pour l'instant, on recalcule simplement nextBeatTime pour le prochain cycle du scheduler.
     if (audioContext) {
       const secondsPerBeat = 60.0 / bpm.value
-      // Si on change le bpm pendant que ça tourne, on veut que le prochain battement
-      // soit relatif au temps actuel, pas basé sur l'ancien `nextBeatTime` qui pourrait être loin.
       nextBeatTime = audioContext.currentTime + secondsPerBeat
     }
   }
@@ -318,7 +297,7 @@ watch(bpm, (newValue) => {
 onUnmounted(() => {
   stop()
   if (audioContext) {
-    audioContext.close() // Fermer le contexte audio pour libérer les ressources
+    audioContext.close()
     audioContext = null
   }
 })

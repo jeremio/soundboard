@@ -79,15 +79,22 @@
 </template>
 
 <script setup lang="ts">
-const bpm = ref<number>(120)
+const bpm = ref<number>(60)
 const isRunning = ref<boolean>(false)
 const showVisualBeat = ref<boolean>(false) // Pour l'animation du pendule (gauche/droite)
 const showFirstBeat = ref<boolean>(false) // Pour l'animation du premier temps
 const minuteRepeat = ref<boolean>(false) // Option pour la répétition
 const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier temps (activée par défaut)
 const errorMessage = ref<string>('')
-const timeInProgress = ref<number>(0) // Temps en cours en secondes
+// Modifions d'abord la déclaration pour plus de précision
+const timeInProgress = ref<number>(0)
 let startTime = 0 // Temps de démarrage du métronome
+
+let audioContext: AudioContext | null = null
+let timerId: number | null = null
+let nextBeatTime: number = 0
+const scheduleAheadTime: number = 0.1 // (secondes) Planifier les battements un peu en avance
+const lookahead: number = 25.0 // (ms) Fréquence à laquelle le scheduler s'exécute
 
 // Définition des préréglages de tempo standards
 const tempoPresets = [
@@ -109,12 +116,6 @@ function setTempo(value: number) {
 function isActivePreset(presetBpm: number): boolean {
   return Math.abs(bpm.value - presetBpm) <= 2
 }
-
-let audioContext: AudioContext | null = null
-let timerId: number | null = null
-let nextBeatTime: number = 0
-const scheduleAheadTime: number = 0.1 // (secondes) Planifier les battements un peu en avance
-const lookahead: number = 25.0 // (ms) Fréquence à laquelle le scheduler s'exécute
 
 function createAudioContext(): Promise<AudioContext> {
   return new Promise((resolve, reject) => {
@@ -154,7 +155,7 @@ async function start() {
 
     nextBeatTime = audioContext.currentTime + 0.1
     startTime = audioContext.currentTime // Initialiser le temps de démarrage
-    timeInProgress.value = 0 // Réinitialiser le temps en cours
+    timeInProgress.value = 0
     isRunning.value = true
     scheduler()
   }
@@ -213,19 +214,19 @@ function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
   }, (beatTime - audioContext.currentTime) * 1000)
 }
 
+// Dans la fonction scheduler, mettons à jour le temps de manière plus précise
 function scheduler() {
   if (!audioContext)
     return
 
   const currentTime = audioContext.currentTime
 
-  // Vérifier s'il faut arrêter après une minute (si mode répétition désactivé)
-  if (!minuteRepeat.value && startTime > 0) {
-    const elapsedTime = currentTime - startTime
-    timeInProgress.value = Math.floor(elapsedTime)
+  // Mise à jour du temps écoulé de manière plus précise
+  if (!minuteRepeat.value) {
+    timeInProgress.value = Math.floor(currentTime - startTime)
 
-    // Arrêter le métronome après 60 secondes si le mode répétition est désactivé
-    if (elapsedTime >= 60) {
+    // Arrêt après 60 secondes si pas en mode répétition
+    if (timeInProgress.value >= 60) {
       stop()
       return
     }
@@ -235,12 +236,7 @@ function scheduler() {
     let isFirstBeat = false
 
     if (minuteRepeat.value) {
-      const currentBeatTime = nextBeatTime
-      const beatTimeInMinute = currentBeatTime % 60 // Position dans la minute courante
-
-      if (beatTimeInMinute < 0.1) {
-        isFirstBeat = accentFirstBeat.value
-      }
+      isFirstBeat = accentFirstBeat.value
     }
 
     scheduleBeat(nextBeatTime, isFirstBeat)

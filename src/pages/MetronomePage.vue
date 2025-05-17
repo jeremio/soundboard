@@ -19,7 +19,7 @@
         :disabled="isRunning"
       >
       <div class="slider-labels">
-        <span>1</span>
+        <span>2</span>
         <span>60</span>
         <span>120</span>
         <span>180</span>

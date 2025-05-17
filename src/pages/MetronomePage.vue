@@ -4,14 +4,14 @@
     <div class="controls">
       <label for="bpm">BPM:</label>
       <input id="bpm" v-model.number="bpm" type="number" min="1" max="300" :disabled="isRunning">
-      <button @click="toggleMetronome" class="toggle-button">
+      <button class="toggle-button" @click="toggleMetronome">
         {{ isRunning ? 'Arrêter' : 'Démarrer' }}
       </button>
     </div>
     <div class="slider-container">
       <input
-        type="range"
         v-model.number="bpm"
+        type="range"
         min="1"
         max="300"
         class="tempo-slider"
@@ -27,15 +27,17 @@
       </div>
     </div>
     <div class="presets-container">
-      <div class="preset-label">Préréglages:</div>
+      <div class="preset-label">
+        Préréglages:
+      </div>
       <div class="preset-buttons">
         <button
           v-for="preset in tempoPresets"
           :key="preset.name"
-          @click="setTempo(preset.bpm)"
           :disabled="isRunning"
           class="preset-button"
-          :class="{ 'active': isActivePreset(preset.bpm) }"
+          :class="{ active: isActivePreset(preset.bpm) }"
+          @click="setTempo(preset.bpm)"
         >
           {{ preset.name }}
         </button>
@@ -43,23 +45,28 @@
     </div>
     <div class="option-controls">
       <label class="checkbox-container">
-        <input type="checkbox" v-model="minuteRepeat" :disabled="isRunning">
-        <span class="checkbox-text">Répétition par minute</span>
+        <input v-model="minuteRepeat" type="checkbox" :disabled="isRunning">
+        <span class="checkbox-text">Répétition</span>
       </label>
-      <label class="checkbox-container" v-if="minuteRepeat">
-        <input type="checkbox" v-model="accentFirstBeat" :disabled="isRunning">
+      <label v-if="minuteRepeat" class="checkbox-container">
+        <input v-model="accentFirstBeat" type="checkbox" :disabled="isRunning">
         <span class="checkbox-text">Accentuer le premier temps</span>
       </label>
     </div>
     <div class="metronome-visual">
       <div class="metronome-display">
-        <div class="tempo-display">{{ bpm }} BPM</div>
+        <div class="tempo-display">
+          {{ bpm }} BPM
+        </div>
+        <div v-if="isRunning && !minuteRepeat" class="time-remaining">
+          Temps restant: {{ remainingTime }}s
+        </div>
         <div class="pendulum-track">
-          <div class="pendulum-marker" :class="{ 'position-left': showVisualBeat, 'position-right': !showVisualBeat, 'accent-beat': showFirstBeat }"></div>
+          <div class="pendulum-marker" :class="{ 'position-left': showVisualBeat, 'position-right': !showVisualBeat, 'accent-beat': showFirstBeat }" />
           <div class="tick-marks">
-            <div class="tick tick-left"></div>
-            <div class="tick tick-center"></div>
-            <div class="tick tick-right"></div>
+            <div class="tick tick-left" />
+            <div class="tick tick-center" />
+            <div class="tick tick-right" />
           </div>
         </div>
       </div>
@@ -78,7 +85,9 @@ const showFirstBeat = ref<boolean>(false) // Pour l'animation du premier temps
 const minuteRepeat = ref<boolean>(false) // Option pour la répétition par minute
 const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier temps (activée par défaut)
 const errorMessage = ref<string>('')
+const remainingTime = ref<number>(60) // Temps restant en secondes
 let beatCount = 0 // Compteur de battements pour le mode répétition par minute
+let startTime = 0 // Temps de démarrage du métronome
 
 // Définition des préréglages de tempo standards
 const tempoPresets = [
@@ -88,7 +97,7 @@ const tempoPresets = [
   { name: 'Moderato', bpm: 112 },
   { name: 'Allegro', bpm: 140 },
   { name: 'Vivace', bpm: 170 },
-  { name: 'Presto', bpm: 190 }
+  { name: 'Presto', bpm: 190 },
 ]
 
 // Fonction pour définir le tempo à partir d'un préréglage
@@ -110,6 +119,57 @@ let nextBeatTime: number = 0
 const scheduleAheadTime: number = 0.1 // (secondes) Planifier les battements un peu en avance
 const lookahead: number = 25.0 // (ms) Fréquence à laquelle le scheduler s'exécute
 
+// Création sécurisée de l'AudioContext
+function createAudioContext(): Promise<AudioContext> {
+  return new Promise((resolve, reject) => {
+    try {
+      const context = new AudioContext()
+      if (context.state === 'suspended') {
+        context.resume()
+          .then(() => resolve(context))
+          .catch(reject)
+      }
+      else {
+        resolve(context)
+      }
+    }
+    catch (error) {
+      reject(new Error('Impossible de créer le contexte audio'))
+    }
+  })
+}
+
+// Amélioration de la fonction start
+async function start() {
+  if (isRunning.value)
+    return
+
+  // Validation du BPM
+  const bpmValue = Number(bpm.value)
+  if (isNaN(bpmValue) || bpmValue < 1 || bpmValue > 300) {
+    errorMessage.value = 'Veuillez entrer une valeur de BPM valide entre 1 et 300.'
+    return
+  }
+
+  try {
+    if (!audioContext) {
+      audioContext = await createAudioContext()
+    }
+
+    beatCount = 0
+    nextBeatTime = audioContext.currentTime + 0.1
+    startTime = audioContext.currentTime // Initialiser le temps de démarrage
+    remainingTime.value = 60 // Réinitialiser le temps restant
+    isRunning.value = true
+    scheduler()
+  }
+  catch (error) {
+    errorMessage.value = 'Erreur lors du démarrage du métronome. Veuillez réessayer.'
+    console.error(error)
+  }
+}
+
+// Amélioration de la fonction scheduleBeat avec nettoyage des ressources
 function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
   if (!audioContext)
     return
@@ -125,7 +185,8 @@ function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
     osc.type = 'triangle' // Type d'onde différent pour le premier temps
     osc.frequency.setValueAtTime(880, beatTime) // Fréquence plus élevée (La5, une octave au-dessus)
     gainNode.gain.setValueAtTime(0.6, beatTime) // Volume légèrement plus fort
-  } else {
+  }
+  else {
     osc.type = 'sine' // Type d'onde pour un son simple
     osc.frequency.setValueAtTime(440, beatTime) // Fréquence du son (La4)
     gainNode.gain.setValueAtTime(0.5, beatTime) // Volume
@@ -135,6 +196,12 @@ function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
 
   osc.start(beatTime)
   osc.stop(beatTime + 0.05)
+
+  // Nettoyage des ressources
+  setTimeout(() => {
+    gainNode.disconnect()
+    osc.disconnect()
+  }, (beatTime - audioContext.currentTime + 0.1) * 1000)
 
   // Indication visuelle avec le pendule
   setTimeout(() => {
@@ -157,7 +224,23 @@ function scheduler() {
   if (!audioContext)
     return
 
-  while (nextBeatTime < audioContext.currentTime + scheduleAheadTime) {
+  const currentTime = audioContext.currentTime
+
+  // Vérifier s'il faut arrêter après une minute (si mode répétition désactivé)
+  if (!minuteRepeat.value && startTime > 0) {
+    const elapsedTime = currentTime - startTime
+    const timeRemaining = Math.max(0, 60 - Math.floor(elapsedTime))
+
+    remainingTime.value = timeRemaining
+
+    // Arrêter le métronome après 60 secondes si le mode répétition est désactivé
+    if (elapsedTime >= 60) {
+      stop()
+      return
+    }
+  }
+
+  while (nextBeatTime < currentTime + scheduleAheadTime) {
     let isFirstBeat = false
 
     if (minuteRepeat.value) {
@@ -171,7 +254,8 @@ function scheduler() {
         // On n'accentue le premier temps que si l'option est activée
         isFirstBeat = accentFirstBeat.value
         beatCount = 1
-      } else {
+      }
+      else {
         beatCount++
       }
     }
@@ -186,29 +270,6 @@ function scheduler() {
   }
 }
 
-function start() {
-  if (isRunning.value)
-    return
-  if (bpm.value < 1 || bpm.value > 300) {
-    errorMessage.value = 'Veuillez entrer une valeur de BPM entre 1 et 300.'
-    return
-  }
-  errorMessage.value = ''
-
-  if (!audioContext) {
-    audioContext = new AudioContext()
-  }
-  // Reprendre le contexte audio s'il était suspendu (interaction utilisateur requise)
-  if (audioContext.state === 'suspended') {
-    audioContext.resume()
-  }
-
-  beatCount = 0 // Réinitialiser le compteur de battements
-  nextBeatTime = audioContext.currentTime + 0.1 // Démarrer le premier battement légèrement dans le futur
-  isRunning.value = true
-  scheduler()
-}
-
 function stop() {
   if (!isRunning.value)
     return
@@ -217,6 +278,8 @@ function stop() {
     clearTimeout(timerId)
     timerId = null
   }
+  // Réinitialiser le temps restant
+  remainingTime.value = 60
   // Il n'est pas nécessaire d'arrêter l'audioContext lui-même,
   // mais on s'assure que plus aucun son n'est planifié.
 }
@@ -465,6 +528,19 @@ onUnmounted(() => {
   background-color: #f8f8f8;
   border-radius: 8px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.time-remaining {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
   width: 100%;
 }
 

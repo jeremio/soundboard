@@ -51,7 +51,19 @@
         <span class="checkbox-text">Accentuer le premier temps</span>
       </label>
     </div>
-    <div v-if="visualBeat" class="visual-beat" :class="{ 'beat-active': showVisualBeat, 'beat-first': showFirstBeat }" />
+    <div class="metronome-visual">
+      <div class="metronome-display">
+        <div class="tempo-display">{{ bpm }} BPM</div>
+        <div class="pendulum-track">
+          <div class="pendulum-marker" :class="{ 'position-left': showVisualBeat, 'position-right': !showVisualBeat, 'accent-beat': showFirstBeat }"></div>
+          <div class="tick-marks">
+            <div class="tick tick-left"></div>
+            <div class="tick tick-center"></div>
+            <div class="tick tick-right"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <p v-if="errorMessage" class="error-message">
       {{ errorMessage }}
     </p>
@@ -61,8 +73,7 @@
 <script setup lang="ts">
 const bpm = ref<number>(120)
 const isRunning = ref<boolean>(false)
-const visualBeat = ref<boolean>(true) // Option pour activer/désactiver l'indicateur visuel
-const showVisualBeat = ref<boolean>(false) // Pour l'animation de l'indicateur visuel
+const showVisualBeat = ref<boolean>(false) // Pour l'animation du pendule (gauche/droite)
 const showFirstBeat = ref<boolean>(false) // Pour l'animation du premier temps
 const minuteRepeat = ref<boolean>(false) // Option pour la répétition par minute
 const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier temps (activée par défaut)
@@ -125,23 +136,21 @@ function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
   osc.start(beatTime)
   osc.stop(beatTime + 0.05)
 
-  // Indication visuelle
-  if (visualBeat.value) {
-    setTimeout(() => {
-      if (isFirstBeat) {
-        showFirstBeat.value = true
-        showVisualBeat.value = false
-      } else {
-        showVisualBeat.value = true
-        showFirstBeat.value = false
-      }
+  // Indication visuelle avec le pendule
+  setTimeout(() => {
+    if (isFirstBeat) {
+      showFirstBeat.value = true
+    }
+    // Alternance du pendule entre gauche et droite
+    showVisualBeat.value = !showVisualBeat.value
 
+    // Réinitialisation de l'indicateur de premier temps après un court délai
+    if (isFirstBeat) {
       setTimeout(() => {
-        showVisualBeat.value = false
         showFirstBeat.value = false
-      }, 50) // Durée de l'indication visuelle
-    }, (beatTime - audioContext.currentTime) * 1000)
-  }
+      }, 100) // Durée de l'indication du premier temps
+    }
+  }, (beatTime - audioContext.currentTime) * 1000)
 }
 
 function scheduler() {
@@ -427,21 +436,96 @@ onUnmounted(() => {
   font-size: 1em;
 }
 
-.visual-beat {
-  width: 50px;
-  height: 50px;
-  background-color: #ddd;
-  border-radius: 50%;
-  transition: background-color 0.05s ease-in-out;
+.metronome-visual {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.metronome-display {
+  width: 260px;
+  background: linear-gradient(145deg, #f0f0f0, #e6e6e6);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tempo-display {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 8px 15px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+.pendulum-track {
+  width: 100%;
+  height: 70px;
+  background: #e0e0e0;
+  border-radius: 35px;
+  position: relative;
   margin-top: 10px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.visual-beat.beat-active {
-  background-color: #007bff;
+.pendulum-marker {
+  width: 30px;
+  height: 30px;
+  background: #007bff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: left 0.12s ease-in-out, background-color 0.1s ease;
+  z-index: 2;
 }
 
-.visual-beat.beat-first {
-  background-color: #ff5722; /* Couleur différente pour le premier temps */
+.pendulum-marker.position-left {
+  left: 20%;
+}
+
+.pendulum-marker.position-right {
+  left: 80%;
+}
+
+.pendulum-marker.accent-beat {
+  background-color: #ff5722;
+  box-shadow: 0 0 10px #ff5722;
+}
+
+.tick-marks {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px;
+  align-items: center;
+  z-index: 1;
+}
+
+.tick {
+  width: 3px;
+  height: 20px;
+  background-color: #bbb;
+  border-radius: 1.5px;
+}
+
+.tick-center {
+  height: 30px;
 }
 
 .error-message {

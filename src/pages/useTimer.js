@@ -129,14 +129,14 @@ export function useTimer() {
   }
 
   // Fonctions d'accessibilité
-  function announceTime() {
-    const announcement = new CustomEvent('timer-announcement', {
-      detail: {
-        message: `Il reste ${getAriaTimeString()}`,
-      },
-    })
-    window.dispatchEvent(announcement)
-  }
+  // function announceTime() {
+  //   const announcement = new CustomEvent('timer-announcement', {
+  //     detail: {
+  //       message: `Il reste ${getAriaTimeString()}`,
+  //     },
+  //   })
+  //   window.dispatchEvent(announcement)
+  // }
 
   function announceTimerStart() {
     const announcement = new CustomEvent('timer-announcement', {
@@ -166,6 +166,7 @@ export function useTimer() {
   }
 
   function announceMode(mode) {
+    console.log('announceMode', mode)
     const announcement = new CustomEvent('timer-announcement', {
       detail: {
         // message: `Mode changé pour ${mode.ariaLabel}`,

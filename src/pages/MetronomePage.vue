@@ -233,7 +233,8 @@ function scheduler() {
       stop()
       return
     }
-  } else {
+  }
+  else {
     // En mode répétition, on continue à suivre le temps pour l'accentuation
     timeInProgress.value = elapsedTime
   }

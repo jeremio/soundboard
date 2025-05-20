@@ -51,7 +51,7 @@
       </label>
       <label v-if="minuteRepeat" class="checkbox-container">
         <input v-model="accentFirstBeat" type="checkbox" :disabled="isRunning">
-        <span class="checkbox-text">Accentuer le premier temps</span>
+        <span class="checkbox-text">Accentuer le premier temps de chaque minute</span>
       </label>
     </div>
     <div class="metronome-visual">
@@ -59,8 +59,8 @@
         <div class="tempo-display">
           {{ bpm }} BPM
         </div>
-        <div v-if="isRunning && !minuteRepeat" class="time-remaining">
-          Temps: {{ timeInProgress }}s / 60s
+        <div v-if="isRunning" class="time-remaining">
+          Temps: {{ timeInProgress }}s {{ !minuteRepeat ? '/ 60s' : '' }}
         </div>
         <div class="pendulum-track">
           <div class="pendulum-marker" :class="{ 'position-left': showVisualBeat, 'position-right': !showVisualBeat, 'accent-beat': showFirstBeat }" />
@@ -88,6 +88,7 @@ const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier t
 const errorMessage = ref<string>('')
 // Modifions d'abord la déclaration pour plus de précision
 const timeInProgress = ref<number>(0)
+const lastMinuteTime = ref<number>(0) // Pour suivre le temps de la dernière minute complétée
 let startTime = 0 // Temps de démarrage du métronome
 
 let audioContext: AudioContext | null = null
@@ -143,8 +144,8 @@ async function start() {
 
   // Validation du BPM
   const bpmValue = Number(bpm.value)
-  if (isNaN(bpmValue) || bpmValue < 1 || bpmValue > 300) {
-    errorMessage.value = 'Veuillez entrer une valeur de BPM valide entre 1 et 300.'
+  if (isNaN(bpmValue) || bpmValue < 2 || bpmValue > 300) {
+    errorMessage.value = 'Veuillez entrer une valeur de BPM valide entre 2 et 300.'
     return
   }
 
@@ -156,6 +157,7 @@ async function start() {
     nextBeatTime = audioContext.currentTime + 0.1
     startTime = audioContext.currentTime // Initialiser le temps de démarrage
     timeInProgress.value = 0
+    lastMinuteTime.value = 0 // Réinitialiser le temps de la dernière minute
     isRunning.value = true
     scheduler()
   }
@@ -220,24 +222,34 @@ function scheduler() {
     return
 
   const currentTime = audioContext.currentTime
-
+  const elapsedTime = Math.floor(currentTime - startTime)
 
   // Mise à jour du temps écoulé de manière plus précise
   if (!minuteRepeat.value) {
-    timeInProgress.value = Math.floor(currentTime - startTime)
+    timeInProgress.value = elapsedTime
 
     // Arrêt après 60 secondes si pas en mode répétition
     if (timeInProgress.value >= 60) {
       stop()
       return
     }
+  } else {
+    // En mode répétition, on continue à suivre le temps pour l'accentuation
+    timeInProgress.value = elapsedTime
   }
 
   while (nextBeatTime < currentTime + scheduleAheadTime) {
     let isFirstBeat = false
 
-    if (minuteRepeat.value) {
-      isFirstBeat = accentFirstBeat.value
+    if (minuteRepeat.value && accentFirstBeat.value) {
+      // Calculer le temps écoulé à ce battement précis
+      const beatTime = Math.floor(nextBeatTime - startTime)
+
+      // Si on a franchi une minute (60s) depuis le dernier accent
+      if (Math.floor(beatTime / 60) > Math.floor(lastMinuteTime.value / 60)) {
+        isFirstBeat = true
+        lastMinuteTime.value = beatTime
+      }
     }
 
     scheduleBeat(nextBeatTime, isFirstBeat)
@@ -259,6 +271,7 @@ function stop() {
     timerId = null
   }
   timeInProgress.value = 0
+  lastMinuteTime.value = 0
 }
 
 function toggleMetronome() {

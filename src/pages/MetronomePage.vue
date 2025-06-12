@@ -132,7 +132,7 @@ function createAudioContext(): Promise<AudioContext> {
       }
     }
     catch (error) {
-      reject(new Error('Impossible de créer le contexte audio'))
+      reject(new Error('Impossible de créer le contexte audio', { cause: error }))
     }
   })
 }
@@ -144,7 +144,7 @@ async function start() {
 
   // Validation du BPM
   const bpmValue = Number(bpm.value)
-  if (isNaN(bpmValue) || bpmValue < 2 || bpmValue > 300) {
+  if (Number.isNaN(bpmValue) || bpmValue < 2 || bpmValue > 300) {
     errorMessage.value = 'Veuillez entrer une valeur de BPM valide entre 2 et 300.'
     return
   }

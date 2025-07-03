@@ -19,21 +19,20 @@
 </template>
 
 <script setup lang="ts">
-import type { MySound } from '~/types/MySound'
-
-import sounds from '~/assets/sounds.json'
+import type { Category } from '~/types/Category'
+import type { MySound, MySoundWithoutId } from '~/types/MySound'
+import soundsData from '~/assets/sounds.json'
 import Grid from '~/components/Grid.vue'
-
 import SearchTools from '~/components/SearchTools.vue'
 import { assignEmptyCategory, assignIds, getCategories, sortArrayByField } from '~/utils'
 
-const allSounds = shallowRef<MySound[]>([])
-const categories = shallowRef<string[]>([])
-
-const selectedCategory = shallowRef('tous')
-const search = shallowRef('')
+const allSounds = ref<MySound[]>([])
+const categories = ref<Category[]>([])
+const selectedCategory = ref<Category | 'tous'>('tous')
+const search = ref('')
 
 onMounted(() => {
+  const sounds = soundsData as MySoundWithoutId[]
   const soundsWithIds: MySound[] = assignIds(sounds)
   const soundsWithIdsAndCategories: MySound[] = assignEmptyCategory(soundsWithIds)
 
@@ -46,6 +45,7 @@ onMounted(() => {
 .board-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   height: 100vh;
 }
 
@@ -53,11 +53,12 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: #00c6bf;
+  background-color: var(--primary-color);
 }
 
 .grid-container {
   flex-grow: 1;
   overflow-y: auto;
+  width: 100%;
 }
 </style>

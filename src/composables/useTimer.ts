@@ -1,8 +1,18 @@
 import PomodoroFinishedSound from '/sounds/travail-termine.mp3'
 import BreakFinishedSound from '/sounds/warcraft-3-humain-travail.mp3'
 
+type TimerMode = 'Pomodoro' | 'Pause courte' | 'Pause longue';
+type TimerStatus = 'En attente' | 'En cours' | 'En pause' | 'Temps écoulé';
+
+interface Mode {
+  name: TimerMode
+  duration: number
+  ariaLabel: string
+  sound: string
+}
+
 export function useTimer() {
-  const modes = [
+  const modes: Mode[] = [
     {
       name: 'Pomodoro',
       duration: 25,
@@ -23,23 +33,30 @@ export function useTimer() {
     },
   ]
 
-  const currentMode = ref('Pomodoro')
-  const minutes = ref(modes.find(x => x.name === currentMode.value).duration)
+  const currentMode = ref<TimerMode>('Pomodoro')
+  const minutes = ref(modes.find(x => x.name === currentMode.value)!.duration)
   const seconds = ref(0)
   const isActive = ref(false)
   const soundEnabled = ref(true)
-  let animationFrameId = null
+  const status = ref<TimerStatus>('En attente')
+  const remainingTime = ref(0)
+  const endTime = computed(() => {
+    const now = new Date()
+    const end = new Date(now.getTime() + remainingTime.value)
+    return end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  })
+  let animationFrameId: number | null = null
   let lastTime = 0
 
-  function formatTime(time) {
+  function formatTime(time: number): string {
     return time.toString().padStart(2, '0')
   }
 
-  function getTimeString() {
+  function getTimeString(): string {
     return `${formatTime(minutes.value)}:${formatTime(seconds.value)}`
   }
 
-  function getAriaTimeString() {
+  function getAriaTimeString(): string {
     let timeString = ''
     if (minutes.value > 0)
       timeString += `${minutes.value} minute${minutes.value > 1 ? 's' : ''}`
@@ -51,7 +68,7 @@ export function useTimer() {
     return timeString || 'Temps écoulé'
   }
 
-  function updateTimer(currentTime) {
+  function updateTimer(currentTime: number) {
     if (!isActive.value)
       return
 
@@ -59,28 +76,20 @@ export function useTimer() {
       lastTime = currentTime
 
     const deltaTime = currentTime - lastTime
+    remainingTime.value -= deltaTime
 
-    if (deltaTime >= 1000) {
-      if (seconds.value === 0) {
-        if (minutes.value === 0) {
-          handleTimerComplete()
-          return
-        }
-        minutes.value--
-        seconds.value = 59
-      }
-      else {
-        seconds.value--
-      }
-
-      lastTime = currentTime
-
-      // Annonce vocale toutes les minutes
-      // if (seconds.value === 0) {
-      //   announceTime()
-      // }
+    if (remainingTime.value <= 0) {
+      remainingTime.value = 0
+      minutes.value = 0
+      seconds.value = 0
+      handleTimerComplete()
+      return
     }
 
+    minutes.value = Math.floor(remainingTime.value / 60000)
+    seconds.value = Math.floor((remainingTime.value % 60000) / 1000)
+
+    lastTime = currentTime
     animationFrameId = requestAnimationFrame(updateTimer)
   }
 
@@ -88,8 +97,11 @@ export function useTimer() {
     if (!isActive.value) {
       isActive.value = true
       lastTime = 0
+      if (remainingTime.value === 0) {
+        remainingTime.value = (minutes.value * 60 + seconds.value) * 1000
+      }
+      status.value = 'En cours'
       animationFrameId = requestAnimationFrame(updateTimer)
-      announceTimerStart()
     }
   }
 
@@ -97,7 +109,7 @@ export function useTimer() {
     isActive.value = false
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId)
-      announceTimerPause()
+      status.value = 'En pause'
     }
   }
 
@@ -106,18 +118,20 @@ export function useTimer() {
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId)
     }
-    const currentModeData = modes.find(mode => mode.name === currentMode.value)
+    const currentModeData = modes.find(mode => mode.name === currentMode.value)!
     minutes.value = currentModeData.duration
     seconds.value = 0
-    announceTimerReset()
+    remainingTime.value = 0
+    status.value = 'En attente'
   }
 
-  function changeMode(mode) {
+  function changeMode(mode: Mode) {
     currentMode.value = mode.name
     minutes.value = mode.duration
     seconds.value = 0
     isActive.value = false
-    announceMode(mode)
+    remainingTime.value = 0
+    status.value = 'En attente'
   }
 
   function handleTimerComplete() {
@@ -125,61 +139,15 @@ export function useTimer() {
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId)
     }
+    status.value = 'Temps écoulé'
     announceTimerComplete()
   }
 
   // Fonctions d'accessibilité
-  // function announceTime() {
-  //   const announcement = new CustomEvent('timer-announcement', {
-  //     detail: {
-  //       message: `Il reste ${getAriaTimeString()}`,
-  //     },
-  //   })
-  //   window.dispatchEvent(announcement)
-  // }
-
-  function announceTimerStart() {
-    const announcement = new CustomEvent('timer-announcement', {
-      detail: {
-        message: `Minuteur démarré. ${getAriaTimeString()} restant`,
-      },
-    })
-    window.dispatchEvent(announcement)
-  }
-
-  function announceTimerPause() {
-    const announcement = new CustomEvent('timer-announcement', {
-      detail: {
-        message: `Minuteur en pause. ${getAriaTimeString()} restant`,
-      },
-    })
-    window.dispatchEvent(announcement)
-  }
-
-  function announceTimerReset() {
-    const announcement = new CustomEvent('timer-announcement', {
-      detail: {
-        message: `Minuteur réinitialisé à ${getAriaTimeString()}`,
-      },
-    })
-    window.dispatchEvent(announcement)
-  }
-
-  function announceMode(mode) {
-    console.log('announceMode', mode)
-    const announcement = new CustomEvent('timer-announcement', {
-      detail: {
-        // message: `Mode changé pour ${mode.ariaLabel}`,
-        message: ``,
-      },
-    })
-    window.dispatchEvent(announcement)
-  }
-
   function announceTimerComplete() {
     const announcement = new CustomEvent('timer-announcement', {
       detail: {
-        message: 'Temps écoulé !',
+        message: 'finished',
       },
     })
     window.dispatchEvent(announcement)
@@ -195,6 +163,9 @@ export function useTimer() {
     isActive,
     currentMode,
     soundEnabled,
+    status,
+    remainingTime,
+    endTime,
     modes,
     getTimeString,
     getAriaTimeString,

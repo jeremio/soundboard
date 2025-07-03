@@ -17,8 +17,10 @@
 </template>
 
 <script setup lang="ts">
+import type { Category } from '~/types/Category'
+
 defineProps<{
-  categories: string[]
+  categories: Category[]
 }>()
 
 const search = defineModel('search')
@@ -27,6 +29,9 @@ const selectedCategory = defineModel('selectedCategory')
 
 <style scoped>
 .search-tools {
+  display: flex;
+  justify-content: center;
+  width: 100%;
   padding-top: 30px;
   padding-bottom: 30px;
 

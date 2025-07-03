@@ -1,0 +1,22 @@
+:root {
+  --primary-color: #00c6bf;
+  --secondary-color: #0e1e24;
+  --accent-color: #7fd1ae;
+  --background-color: #e8e9ee;
+  --text-color: #2c3e50;
+  --white: #ffffff;
+  --light-gray: #f0f0f0;
+  --gray: #e5e7eb;
+  --dark-gray: #6b7280;
+  --blue: #007bff;
+  --red: #f44336;
+
+  --font-family-sans: 'Avenir', Helvetica, Arial, sans-serif;
+  --font-family-serif: 'Georgia', serif;
+
+  --h1-font-size: 2rem;
+  --h2-font-size: 1.5rem;
+  --h3-font-size: 1.25rem;
+  --p-font-size: 1rem;
+  --small-font-size: 0.875rem;
+}

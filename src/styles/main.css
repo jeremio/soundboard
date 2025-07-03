@@ -1,2 +1,31 @@
 @import "~/styles/reset.css";
-@import "~/styles/style.css";
+@import "~/styles/_variables.css";
+
+body {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--font-family-sans);
+}
+
+#app {
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+#app > div {
+  text-align: center;
+}
+
+h1 {
+  font-size: var(--h1-font-size);
+  font-weight: bold;
+  margin-bottom: 1rem;
+}

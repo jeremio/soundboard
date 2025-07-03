@@ -10,13 +10,14 @@
 </template>
 
 <script setup lang="ts">
+import type { Category } from '~/types/Category'
 import type { MySound } from '~/types/MySound'
 import Bouton from '~/components/Bouton.vue'
 
 const props = defineProps<{
   allSounds: MySound[]
   search: string
-  selectedCategory: string
+  selectedCategory: Category | 'tous'
 }>()
 
 // Filtre par catégorie - ce calcul est moins fréquent
@@ -24,7 +25,7 @@ const categorizedSounds = computed(() => {
   if (props.selectedCategory === 'tous')
     return props.allSounds
   return props.allSounds.filter(sound =>
-    sound.categories.includes(props.selectedCategory),
+    sound.categories.includes(props.selectedCategory as Category),
   )
 })
 
@@ -42,6 +43,7 @@ function matchesSearch(sound: MySound) {
 .grid {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 4px;
   padding: 4px;
   width: 100%;

@@ -1,7 +1,13 @@
 <template>
   <div class="corner-component">
-    <router-link :to="targetRoute" class="corner-button">
-      {{ buttonText }}
+    <router-link v-if="route.name !== 'index'" :to="{ name: 'index' }" class="corner-button">
+      Soundboard
+    </router-link>
+    <router-link v-if="route.name !== 'pomodoro'" :to="{ name: 'pomodoro' }" class="corner-button">
+      Pomodoro
+    </router-link>
+    <router-link v-if="route.name !== 'Metronome'" :to="{ name: 'Metronome' }" class="corner-button">
+      Metronome
     </router-link>
   </div>
 </template>
@@ -10,16 +16,6 @@
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-
-// Définir la route cible en fonction de la page actuelle
-const targetRoute = computed(() => {
-  return route.name === 'index' ? { name: 'pomodoro' } : { name: 'index' }
-})
-
-// Modifier le texte du bouton selon la page
-const buttonText = computed(() => {
-  return route.name === 'index' ? 'Go to Pomodoro' : 'Go to Soundboard'
-})
 </script>
 
 <style scoped>
@@ -28,6 +24,8 @@ const buttonText = computed(() => {
   top: 20px;
   right: 20px;
   z-index: 1000;
+  display: flex;
+  gap: 10px;
 }
 
 .corner-button {
@@ -39,6 +37,7 @@ const buttonText = computed(() => {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s;
+  text-decoration: none;
 }
 
 .corner-button:hover {

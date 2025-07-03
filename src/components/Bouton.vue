@@ -21,40 +21,41 @@
         <div class="triangle_square" />
       </button>
 
-      <div v-show="isPlaying" class="progress-container">
-        <div class="progress-bar" :style="{ width: `${progress}%` }" />
-        <span class="time">{{ formatTime(currentTime) }} / {{ formatTime(duration) }}</span>
-      </div>
-
-      <audio
-        ref="audioRef"
-        :src="`/sounds/${sound.src}`"
-        @play="onPlay"
-        @pause="onPause"
-        @ended="onEnded"
-        @timeupdate="onTimeUpdate"
-        @loadedmetadata="onLoadedMetadata"
+      <ProgressBar
+        v-show="isPlaying"
+        :progress="progress"
+        :current-time="currentTime"
+        :duration="duration"
+        :format-time="formatTime"
       />
     </div>
 
-    <div v-if="showToast" class="toast" role="alert">
-      {{ toastMessage }}
-    </div>
+    <Toast :show="showToast" :message="toastMessage" />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { MySound } from '~/types/MySound'
 import copySVG from '~/assets/copy.svg'
+import ProgressBar from '~/components/ProgressBar.vue'
+import Toast from '~/components/Toast.vue'
+import { useAudioPlayer } from '~/composables/useAudioPlayer'
 
 const props = defineProps<{
   sound: MySound
 }>()
 
-const audioRef = ref<HTMLAudioElement>()
-const isPlaying = ref(false)
-const currentTime = ref(0)
-const duration = ref(0)
+const soundSrc = computed(() => `/sounds/${props.sound.src}`)
+
+const {
+  isPlaying,
+  currentTime,
+  duration,
+  progress,
+  formatTime,
+  toggle,
+} = useAudioPlayer({ soundSrc })
+
 const showToast = ref(false)
 const toastMessage = ref('')
 
@@ -64,18 +65,6 @@ const t = {
   pause: 'Pause',
   urlCopied: 'URL copiée dans le presse-papier',
   copyError: 'Erreur lors de la copie de l\'URL',
-}
-
-const progress = computed(() => {
-  if (!duration.value)
-    return 0
-  return (currentTime.value / duration.value) * 100
-})
-
-function formatTime(seconds: number): string {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = Math.floor(seconds % 60)
-  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
 
 function showToastMessage(message: string, duration = 3000) {
@@ -96,44 +85,6 @@ async function copyURL() {
     console.error(e)
     showToastMessage(t.copyError)
   }
-}
-
-function toggle() {
-  if (!audioRef.value)
-    return
-
-  if (isPlaying.value) {
-    audioRef.value.pause()
-  }
-  else {
-    audioRef.value.play()
-  }
-}
-
-// Gestionnaires d'événements audio
-function onPlay() {
-  isPlaying.value = true
-}
-
-function onPause() {
-  isPlaying.value = false
-}
-
-function onEnded() {
-  isPlaying.value = false
-  currentTime.value = 0
-}
-
-function onTimeUpdate() {
-  if (!audioRef.value)
-    return
-  currentTime.value = audioRef.value.currentTime
-}
-
-function onLoadedMetadata() {
-  if (!audioRef.value)
-    return
-  duration.value = audioRef.value.duration
 }
 </script>
 

@@ -1,3 +1,4 @@
+import type { Category } from '~/types/Category'
 import type { MySound, MySoundWithoutId } from '~/types/MySound'
 
 export function assignEmptyCategory(sounds: MySound[]): MySound[] {
@@ -40,11 +41,11 @@ export function sortArrayByField<T>(
   })
 }
 
-export function getCategories(sounds: MySound[]): string[] {
+export function getCategories(sounds: MySound[]): Category[] {
   return Array.from(
     sounds.reduce((acc, sound: MySound) => {
-      sound.categories.forEach((category: string) => acc.add(category))
+      sound.categories.forEach(category => acc.add(category))
       return acc
-    }, new Set<string>()),
+    }, new Set<Category>()),
   )
 }

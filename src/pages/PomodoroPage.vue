@@ -34,6 +34,7 @@
       <button
         :class="{ running: isActive }"
         :aria-label="isActive ? 'Mettre en pause' : 'Démarrer'"
+        :disabled="status === 'Temps écoulé'"
         @click="isActive ? pauseTimer() : startTimer()"
       >
         {{ isActive ? 'Pause' : 'Démarrer' }}
@@ -66,22 +67,19 @@
     >
       {{ currentAnnouncement }}
     </div>
-
-    <!-- Elements audio pour chaque type de minuteur -->
-    <audio v-for="mode in modes" :key="`audio-${mode.name}`" :ref="setAudioRef(mode.name)" preload="auto">
-      <source :src="mode.sound" type="audio/mp3">
-      Votre navigateur ne supporte pas l'élément audio.
-    </audio>
   </div>
 </template>
 
 <script setup>
-import { useTimer } from './useTimer'
+import { useAudioPlayer } from '~/composables/useAudioPlayer'
+import { useTimer } from '~/composables/useTimer'
 
 const {
   isActive,
   currentMode,
   soundEnabled,
+  status,
+  endTime,
   modes,
   getTimeString,
   getAriaTimeString,
@@ -91,62 +89,46 @@ const {
   changeMode,
 } = useTimer()
 
-// Gestion des annonces d'accessibilité
-const currentAnnouncement = ref('')
-let announcementTimeout
+const soundSrc = computed(() => modes.find(m => m.name === currentMode.value)?.sound ?? '')
+const { play } = useAudioPlayer({ soundSrc })
 
-function handleAnnouncement(event) {
-  currentAnnouncement.value = event.detail.message
-  if (event.detail.message === 'Temps écoulé !') {
-    playSound()
+// Gestion des annonces d'accessibilité
+const currentAnnouncement = computed(() => {
+  if (status.value === 'En cours' || status.value === 'En pause') {
+    return `${status.value} - Se termine à ${endTime.value}`
   }
-  if (announcementTimeout)
-    clearTimeout(announcementTimeout)
-  announcementTimeout = setTimeout(() => {
-    currentAnnouncement.value = ''
-  }, 2000)
+  if (status.value === 'Temps écoulé') {
+    return `${status.value} à ${endTime.value}`
+  }
+  return status.value
+})
+
+function handleTimerFinished() {
+  if (soundEnabled.value) {
+    play()
+  }
+}
+
+function handleKeyDown(e) {
+  if (e.code === 'Space') {
+    e.preventDefault()
+    isActive.value ? pauseTimer() : startTimer()
+  }
+  else if (e.code === 'KeyR') {
+    e.preventDefault()
+    resetTimer()
+  }
 }
 
 onMounted(() => {
-  window.addEventListener('timer-announcement', handleAnnouncement)
-
-  // Gestion des raccourcis clavier
-  window.addEventListener('keydown', (e) => {
-    if (e.code === 'Space') {
-      e.preventDefault()
-      isActive.value ? pauseTimer() : startTimer()
-    }
-    else if (e.code === 'KeyR') {
-      e.preventDefault()
-      resetTimer()
-    }
-  })
+  window.addEventListener('timer-announcement', handleTimerFinished)
+  window.addEventListener('keydown', handleKeyDown)
 })
 
-// Référence pour les éléments audio
-const audioRefs = {}
-
-// Fonction pour définir les références audio
-function setAudioRef(modeName) {
-  return (el) => {
-    if (el) {
-      audioRefs[modeName] = el
-    }
-  }
-}
-
-function playSound() {
-  if (!soundEnabled.value || !audioRefs[currentMode.value])
-    return
-
-  const audio = audioRefs[currentMode.value]
-  audio.currentTime = 0
-
-  return audio.play()
-    .catch((error) => {
-      console.error(`Erreur lors de la lecture du son ${currentMode.value}:`, error)
-    })
-}
+onUnmounted(() => {
+  window.removeEventListener('timer-announcement', handleTimerFinished)
+  window.removeEventListener('keydown', handleKeyDown)
+})
 </script>
 
 <style scoped>
@@ -154,11 +136,10 @@ function playSound() {
   max-width: 400px;
   margin: 0 auto;
   text-align: center;
-  font-family: Arial, sans-serif;
 }
 
 .title {
-  font-size: 24px;
+  font-size: var(--h1-font-size);
   margin-top: 20px;
   margin-bottom: 20px;
   display: flex;
@@ -179,18 +160,18 @@ function playSound() {
 
 .timer-modes button {
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: var(--p-font-size);
   border-radius: 4px;
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--light-gray);
+  color: var(--text-color);
   border: none;
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .timer-modes button.active {
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
 .timer-display {
@@ -198,7 +179,7 @@ function playSound() {
 }
 
 .time {
-  font-size: 48px;
+  font-size: 3rem;
   font-weight: bold;
 }
 
@@ -211,29 +192,34 @@ function playSound() {
 
 .controls button {
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: var(--p-font-size);
   cursor: pointer;
   border: none;
   border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white);
   transition: background-color 0.3s;
 }
 
 .controls button:hover {
-  background-color: #45a049;
+  background-color: #00a39e;
+}
+
+.controls button:disabled {
+  background-color: var(--gray);
+  cursor: not-allowed;
 }
 
 .controls button.running {
-  background-color: #f44336;
+  background-color: var(--red);
 }
 
 .controls button.reset {
-  background-color: #2196F3;
+  background-color: var(--blue);
 }
 
 .controls button.reset:hover {
-  background-color: #1e87dc;
+  background-color: #0056b3;
 }
 
 .sound-controls {
@@ -249,6 +235,6 @@ function playSound() {
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--small-font-size);
 }
 </style>

@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 interface UseAudioPlayerOptions {
   soundSrc: Ref<string>
@@ -64,7 +64,7 @@ export function useAudioPlayer(options?: UseAudioPlayerOptions) {
       return
     duration.value = audio.value.duration
   }
-  
+
   onMounted(() => {
     audio.value = new Audio()
     if (options?.soundSrc.value) {

@@ -1,8 +1,8 @@
 import PomodoroFinishedSound from '/sounds/travail-termine.mp3'
 import BreakFinishedSound from '/sounds/warcraft-3-humain-travail.mp3'
 
-type TimerMode = 'Pomodoro' | 'Pause courte' | 'Pause longue';
-type TimerStatus = 'En attente' | 'En cours' | 'En pause' | 'Temps écoulé';
+type TimerMode = 'Pomodoro' | 'Pause courte' | 'Pause longue'
+type TimerStatus = 'En attente' | 'En cours' | 'En pause' | 'Temps écoulé'
 
 interface Mode {
   name: TimerMode

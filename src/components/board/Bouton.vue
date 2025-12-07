@@ -37,8 +37,8 @@
 <script setup lang="ts">
 import type { MySound } from '~/types/MySound'
 import copySVG from '~/assets/copy.svg'
-import ProgressBar from '~/components/ProgressBar.vue'
-import Toast from '~/components/Toast.vue'
+import ProgressBar from '~/components/board/ProgressBar.vue'
+import Toast from '~/components/board/Toast.vue'
 import { useAudioPlayer } from '~/composables/useAudioPlayer'
 
 const props = defineProps<{
@@ -149,47 +149,5 @@ async function copyURL() {
   width: 1.25rem;
   height: 1.25rem;
   background-color: #0e1e24;
-}
-
-.progress-container {
-  position: absolute;
-  bottom: -1.25rem;
-  left: 0;
-  width: 100%;
-  height: 0.25rem;
-  background-color: #e5e7eb;
-  border-radius: 0.125rem;
-}
-
-.progress-bar {
-  height: 100%;
-  background-color: #0e1e24;
-  border-radius: 0.125rem;
-  transition: width 0.1s linear;
-}
-
-.time {
-  position: absolute;
-  right: 0;
-  bottom: -1.25rem;
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-.toast {
-  position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  background-color: #0e1e24;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 0.3125rem;
-  animation: fadeInOut 3s ease-in-out;
-  z-index: 1000;
-}
-
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  10%, 90% { opacity: 1; }
 }
 </style>

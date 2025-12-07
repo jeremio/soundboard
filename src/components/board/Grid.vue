@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import type { Category } from '~/types/Category'
 import type { MySound } from '~/types/MySound'
-import Bouton from '~/components/Bouton.vue'
+import Bouton from '~/components/board/Bouton.vue'
 
 const props = defineProps<{
   allSounds: MySound[]

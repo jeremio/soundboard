@@ -1,5 +1,5 @@
 <template>
-  <div class="metronome-page">
+  <div class="page">
     <h1>Métronome</h1>
     <div class="controls">
       <label for="bpm">BPM:</label>
@@ -98,11 +98,12 @@ const {
 </script>
 
 <style scoped>
-.metronome-page {
+.page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
   background-color: var(--light-gray);
   min-height: 200px;
   border-radius: 8px;

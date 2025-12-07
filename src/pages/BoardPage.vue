@@ -1,5 +1,6 @@
 <template>
-  <div class="board-container">
+  <div class="page">
+    <h1>Sound board</h1>
     <SearchTools
       v-if="categories.length > 0"
       v-model:search="search"
@@ -22,8 +23,8 @@
 import type { Category } from '~/types/Category'
 import type { MySound, MySoundWithoutId } from '~/types/MySound'
 import soundsData from '~/assets/sounds.json'
-import Grid from '~/components/Grid.vue'
-import SearchTools from '~/components/SearchTools.vue'
+import Grid from '~/components/board/Grid.vue'
+import SearchTools from '~/components/board/SearchTools.vue'
 import { assignEmptyCategory, assignIds, getCategories, sortArrayByField } from '~/utils'
 
 const allSounds = ref<MySound[]>([])
@@ -42,18 +43,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.board-container {
+.page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: var(--light-gray);
+  min-height: 200px;
+  border-radius: 8px;
 }
 
 .search-tools {
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: var(--primary-color);
+  background-color: var(--text-color);
 }
 
 .grid-container {

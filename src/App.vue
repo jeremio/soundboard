@@ -1,8 +1,8 @@
 <template>
-  <CornerComponent />
+  <Corner />
   <RouterView />
 </template>
 
 <script setup lang="ts">
-import CornerComponent from '~/components/CornerPage.vue'
+import Corner from '~/components/common/Corner.vue'
 </script>

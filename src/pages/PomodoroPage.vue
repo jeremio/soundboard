@@ -1,8 +1,7 @@
 <template>
-  <div class="pomodoro-timer" role="application" aria-label="Minuteur Pomodoro">
-    <h1 id="timer-title" class="title">
-      <span class="icon" aria-hidden="true">⏱️</span>
-      Pomodoro Timer
+  <div class="page" role="application" aria-label="Minuteur Pomodoro">
+    <h1 id="timer-title">
+      Pomodoro
     </h1>
 
     <div class="timer-modes" role="radiogroup" aria-labelledby="timer-title">
@@ -132,23 +131,15 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.pomodoro-timer {
-  max-width: 400px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.title {
-  font-size: var(--h1-font-size);
-  margin-top: 20px;
-  margin-bottom: 20px;
+.page {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-}
-
-.icon {
-  margin-right: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background-color: var(--light-gray);
+  min-height: 200px;
+  border-radius: 8px;
 }
 
 .timer-modes {

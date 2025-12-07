@@ -193,7 +193,7 @@ onUnmounted(() => {
 }
 
 .controls button:hover {
-  background-color: #00a39e;
+  background-color: var(--accent-color);
 }
 
 .controls button:disabled {
@@ -210,7 +210,7 @@ onUnmounted(() => {
 }
 
 .controls button.reset:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color);
 }
 
 .sound-controls {

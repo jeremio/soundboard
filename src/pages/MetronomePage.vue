@@ -147,11 +147,11 @@ const {
 }
 
 .toggle-button:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-color);
 }
 
 .toggle-button:active {
-  background-color: #004085;
+  background-color: var(--secondary-color);
 }
 
 .toggle-button:disabled {
@@ -213,7 +213,7 @@ const {
 
 .preset-label {
   font-size: 1em;
-  color: #555;
+  color: var(--dark-gray);
   margin-bottom: 5px;
 }
 
@@ -239,9 +239,9 @@ const {
 }
 
 .preset-button.active {
-  background-color: #d7ebff;
-  border-color: var(--blue);
-  color: var(--blue);
+  background-color: var(--accent-color);
+  border-color: var(--primary-color);
+  color: var(--white);
 }
 
 .preset-button:disabled {
@@ -295,11 +295,11 @@ const {
 .tempo-display {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
   text-align: center;
   margin-bottom: 15px;
   padding: 8px 15px;
-  background-color: #f8f8f8;
+  background-color: var(--white);
   border-radius: 8px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   width: 100%;
@@ -308,7 +308,7 @@ const {
 .time-remaining {
   font-size: 1rem;
   font-weight: 500;
-  color: #555;
+  color: var(--dark-gray);
   text-align: center;
   margin-bottom: 10px;
   padding: 5px 10px;
@@ -370,7 +370,7 @@ const {
 .tick {
   width: 3px;
   height: 20px;
-  background-color: #bbb;
+  background-color: var(--dark-gray);
   border-radius: 1.5px;
 }
 

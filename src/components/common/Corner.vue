@@ -30,7 +30,7 @@ const route = useRoute()
 
 .corner-button {
   padding: 10px 15px;
-  background-color: #7fd1ae;
+  background-color: var(--accent-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -41,6 +41,6 @@ const route = useRoute()
 }
 
 .corner-button:hover {
-  background-color: #45a049;
+  background-color: var(--primary-color);
 }
 </style>

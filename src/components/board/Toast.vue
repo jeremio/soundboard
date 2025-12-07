@@ -16,8 +16,8 @@ defineProps<{
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
-  background-color: #0e1e24;
-  color: white;
+  background-color: var(--secondary-color);
+  color: var(--white);
   padding: 0.75rem 1rem;
   border-radius: 0.3125rem;
   animation: fadeInOut 3s ease-in-out;

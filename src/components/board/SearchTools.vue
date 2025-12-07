@@ -36,13 +36,13 @@ const selectedCategory = defineModel('selectedCategory')
   padding-bottom: 30px;
 
   select {
-    color: #0e1e24;
+    color: var(--secondary-color);
     font-weight: bold;
     text-transform: capitalize;
     height: 60px;
     width: 200px;
-    background: white;
-    border: 2px solid white;
+    background: var(--white);
+    border: 2px solid var(--white);
     padding-left: 20px;
     padding-right: 20px;
     border-radius: 5px;
@@ -52,7 +52,7 @@ const selectedCategory = defineModel('selectedCategory')
     &:hover,
     &:focus {
       outline: none;
-      border: 2px solid #0e1e24;
+      border: 2px solid var(--secondary-color);
       cursor: pointer;
     }
   }
@@ -68,13 +68,13 @@ const selectedCategory = defineModel('selectedCategory')
 
   input {
     margin-right: 20px;
-    color: #0e1e24;
+    color: var(--secondary-color);
     font-weight: bold;
     text-transform: capitalize;
     height: 60px;
     width: 200px;
-    background: white;
-    border: 2px solid white;
+    background: var(--white);
+    border: 2px solid var(--white);
     padding-left: 20px;
     padding-right: 20px;
     border-radius: 5px;
@@ -83,7 +83,7 @@ const selectedCategory = defineModel('selectedCategory')
     &:hover,
     &:focus {
       outline: none;
-      border: 2px solid #0e1e24;
+      border: 2px solid var(--secondary-color);
       cursor: text;
     }
   }

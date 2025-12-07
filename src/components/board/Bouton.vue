@@ -90,13 +90,13 @@ async function copyURL() {
 
 <style scoped>
 .sound-button {
-  background-color: white;
+  background-color: var(--white);
   display: flex;
   align-items: center;
   margin: 1.875rem 1.25rem;
   position: relative;
   border-radius: 0.3125rem;
-  border: 0.125rem solid white;
+  border: 0.125rem solid var(--white);
   height: 3.75rem;
   transition: box-shadow 0.3s ease;
 }
@@ -121,11 +121,11 @@ async function copyURL() {
 }
 
 .copy-button {
-  border-right: 0.0625rem solid #e5e7eb;
+  border-right: 0.0625rem solid var(--gray);
 }
 
 .label {
-  color: #0e1e24;
+  color: var(--secondary-color);
   font-weight: bold;
   text-transform: capitalize;
   padding: 0 0.5rem;
@@ -138,7 +138,7 @@ async function copyURL() {
 .triangle_square {
   width: 0;
   height: 0;
-  border-left: 0.625rem solid #0e1e24;
+  border-left: 0.625rem solid var(--secondary-color);
   border-top: 0.625rem solid transparent;
   border-bottom: 0.625rem solid transparent;
   transition: all 0.3s;
@@ -148,6 +148,6 @@ async function copyURL() {
   border: none;
   width: 1.25rem;
   height: 1.25rem;
-  background-color: #0e1e24;
+  background-color: var(--secondary-color);
 }
 </style>

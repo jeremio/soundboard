@@ -1,23 +1,52 @@
+import { onUnmounted, ref, watch } from 'vue'
+
+interface TimeSignature {
+  beats: number
+  unit: number
+}
+
+interface ScheduledBeat {
+  osc: OscillatorNode
+  gain: GainNode
+}
+
+const timeSignatures: TimeSignature[] = [
+  { beats: 2, unit: 4 },
+  { beats: 3, unit: 4 },
+  { beats: 4, unit: 4 },
+  { beats: 5, unit: 4 },
+  { beats: 6, unit: 8 },
+  { beats: 7, unit: 8 },
+]
+
+const subdivisionOptions = [
+  { value: 1, label: 'Noires' },
+  { value: 2, label: 'Croches' },
+  { value: 3, label: 'Triolets' },
+  { value: 4, label: 'Doubles croches' },
+]
+
 export function useMetronome() {
   const bpm = ref<number>(60)
   const isRunning = ref<boolean>(false)
-  const showVisualBeat = ref<boolean>(false) // Pour l'animation du pendule (gauche/droite)
-  const showFirstBeat = ref<boolean>(false) // Pour l'animation du premier temps
-  const minuteRepeat = ref<boolean>(false) // Option pour la répétition
-  const accentFirstBeat = ref<boolean>(true) // Option pour accentuer le premier temps (activée par défaut)
+  const showVisualBeat = ref<boolean>(false)
+  const showAccentBeat = ref<boolean>(false)
   const errorMessage = ref<string>('')
-  // Modifions d'abord la déclaration pour plus de précision
-  const timeInProgress = ref<number>(0)
-  const lastMinuteTime = ref<number>(0) // Pour suivre le temps de la dernière minute complétée
-  let startTime = 0 // Temps de démarrage du métronome
+  const timeSignature = ref<TimeSignature>(timeSignatures[2])
+  const subdivision = ref<number>(1)
+  const volume = ref<number>(0.5)
+  const currentBeat = ref<number>(0)
 
   let audioContext: AudioContext | null = null
   let timerId: number | null = null
-  let nextBeatTime: number = 0
-  const scheduleAheadTime: number = 0.1 // (secondes) Planifier les battements un peu en avance
-  const lookahead: number = 25.0 // (ms) Fréquence à laquelle le scheduler s'exécute
+  let nextNoteTime: number = 0
+  let beatIndex: number = 0
+  let subdivisionIndex: number = 0
+  let scheduled: ScheduledBeat[] = []
 
-  // Définition des préréglages de tempo standards
+  const scheduleAheadTime = 0.1
+  const lookahead = 25.0
+
   const tempoPresets = [
     { name: 'Largo', bpm: 50 },
     { name: 'Adagio', bpm: 70 },
@@ -29,14 +58,26 @@ export function useMetronome() {
   ]
 
   function setTempo(value: number) {
-    if (!isRunning.value) {
-      bpm.value = value
-    }
+    bpm.value = value
   }
 
   function isActivePreset(presetBpm: number): boolean {
     return Math.abs(bpm.value - presetBpm) <= 2
   }
+
+  watch(timeSignature, () => {
+    if (isRunning.value) {
+      beatIndex = 0
+      subdivisionIndex = 0
+      currentBeat.value = 0
+    }
+  })
+
+  watch(subdivision, () => {
+    if (isRunning.value) {
+      subdivisionIndex = 0
+    }
+  })
 
   function createAudioContext(): Promise<AudioContext> {
     return new Promise((resolve, reject) => {
@@ -57,27 +98,26 @@ export function useMetronome() {
     })
   }
 
-  // Amélioration de la fonction start
   async function start() {
     if (isRunning.value)
       return
 
-    // Validation du BPM
     const bpmValue = Number(bpm.value)
-    if (Number.isNaN(bpmValue) || bpmValue < 2 || bpmValue > 300) {
+    if (!Number.isFinite(bpmValue) || bpmValue < 2 || bpmValue > 300) {
       errorMessage.value = 'Veuillez entrer une valeur de BPM valide entre 2 et 300.'
       return
     }
+    errorMessage.value = ''
 
     try {
       if (!audioContext) {
         audioContext = await createAudioContext()
       }
 
-      nextBeatTime = audioContext.currentTime + 0.1
-      startTime = audioContext.currentTime // Initialiser le temps de démarrage
-      timeInProgress.value = 0
-      lastMinuteTime.value = 0 // Réinitialiser le temps de la dernière minute
+      nextNoteTime = audioContext.currentTime + 0.05
+      beatIndex = 0
+      subdivisionIndex = 0
+      currentBeat.value = 0
       isRunning.value = true
       scheduler()
     }
@@ -87,100 +127,108 @@ export function useMetronome() {
     }
   }
 
-  function scheduleBeat(beatTime: number, isFirstBeat: boolean = false) {
+  function scheduleBeat(beatTime: number, kind: 'accent' | 'beat' | 'sub') {
     if (!audioContext)
       return
 
     const osc = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
+    const gain = audioContext.createGain()
 
-    osc.connect(gainNode)
-    gainNode.connect(audioContext.destination)
+    osc.connect(gain)
+    gain.connect(audioContext.destination)
 
-    // Son plus aigu pour le premier battement si option activée
-    if (isFirstBeat) {
-      osc.type = 'triangle' // Type d'onde différent pour le premier temps
-      osc.frequency.setValueAtTime(880, beatTime) // Fréquence plus élevée (La5, une octave au-dessus)
-      gainNode.gain.setValueAtTime(0.6, beatTime) // Volume légèrement plus fort
+    let frequency: number
+    let amplitude: number
+    let waveform: OscillatorType
+
+    switch (kind) {
+      case 'accent':
+        frequency = 880
+        amplitude = volume.value
+        waveform = 'triangle'
+        break
+      case 'beat':
+        frequency = 440
+        amplitude = volume.value * 0.85
+        waveform = 'sine'
+        break
+      case 'sub':
+        frequency = 660
+        amplitude = volume.value * 0.4
+        waveform = 'sine'
+        break
     }
-    else {
-      osc.type = 'sine' // Type d'onde pour un son simple
-      osc.frequency.setValueAtTime(440, beatTime) // Fréquence du son (La4)
-      gainNode.gain.setValueAtTime(0.5, beatTime) // Volume
-    }
 
-    gainNode.gain.exponentialRampToValueAtTime(0.00001, beatTime + 0.05) // Fondu rapide
+    osc.type = waveform
+    osc.frequency.setValueAtTime(frequency, beatTime)
+    gain.gain.setValueAtTime(amplitude, beatTime)
+    gain.gain.exponentialRampToValueAtTime(0.00001, beatTime + 0.05)
 
     osc.start(beatTime)
-    osc.stop(beatTime + 0.05)
+    osc.stop(beatTime + 0.06)
 
-    // Nettoyage des ressources
-    setTimeout(() => {
-      gainNode.disconnect()
-      osc.disconnect()
-    }, (beatTime - audioContext.currentTime + 0.1) * 1000)
+    const ref: ScheduledBeat = { osc, gain }
+    scheduled.push(ref)
 
-    setTimeout(() => {
-      if (isFirstBeat) {
-        showFirstBeat.value = true
+    osc.onended = () => {
+      try {
+        gain.disconnect()
+        osc.disconnect()
       }
-      // Alternance du pendule entre gauche et droite
-      showVisualBeat.value = !showVisualBeat.value
+      catch {}
+      scheduled = scheduled.filter(s => s !== ref)
+    }
 
-      // Réinitialisation de l'indicateur de premier temps après un court délai
-      if (isFirstBeat) {
+    const delayMs = Math.max(0, (beatTime - audioContext.currentTime) * 1000)
+    setTimeout(() => {
+      if (!isRunning.value)
+        return
+      if (kind !== 'sub') {
+        showVisualBeat.value = !showVisualBeat.value
+      }
+      if (kind === 'accent') {
+        showAccentBeat.value = true
         setTimeout(() => {
-          showFirstBeat.value = false
-        }, 100) // Durée de l'indication du premier temps
+          showAccentBeat.value = false
+        }, Math.min(200, (60_000 / bpm.value) * 0.4))
       }
-    }, (beatTime - audioContext.currentTime) * 1000)
+    }, delayMs)
   }
 
-  // Dans la fonction scheduler, mettons à jour le temps de manière plus précise
   function scheduler() {
-    if (!audioContext)
+    if (!audioContext || !isRunning.value)
       return
 
-    const currentTime = audioContext.currentTime
-    const elapsedTime = Math.floor(currentTime - startTime)
+    const sub = Math.max(1, subdivision.value)
+    const secondsPerBeat = 60.0 / bpm.value
+    const secondsPerTick = secondsPerBeat / sub
 
-    // Mise à jour du temps écoulé de manière plus précise
-    if (!minuteRepeat.value) {
-      timeInProgress.value = elapsedTime
+    while (nextNoteTime < audioContext.currentTime + scheduleAheadTime) {
+      let kind: 'accent' | 'beat' | 'sub'
 
-      // Arrêt après 60 secondes si pas en mode répétition
-      if (timeInProgress.value >= 60) {
-        stop()
-        return
-      }
-    }
-    else {
-      // En mode répétition, on continue à suivre le temps pour l'accentuation
-      timeInProgress.value = elapsedTime
-    }
-
-    while (nextBeatTime < currentTime + scheduleAheadTime) {
-      let isFirstBeat = false
-
-      if (minuteRepeat.value && accentFirstBeat.value) {
-        // Calculer le temps écoulé à ce battement précis
-        const beatTime = Math.floor(nextBeatTime - startTime)
-
-        // Si on a franchi une minute (60s) depuis le dernier accent
-        if (Math.floor(beatTime / 60) > Math.floor(lastMinuteTime.value / 60)) {
-          isFirstBeat = true
-          lastMinuteTime.value = beatTime
+      if (subdivisionIndex === 0) {
+        if (beatIndex === 0) {
+          kind = 'accent'
         }
+        else {
+          kind = 'beat'
+        }
+        currentBeat.value = beatIndex
+      }
+      else {
+        kind = 'sub'
       }
 
-      scheduleBeat(nextBeatTime, isFirstBeat)
-      const secondsPerBeat = 60.0 / bpm.value
-      nextBeatTime += secondsPerBeat
+      scheduleBeat(nextNoteTime, kind)
+
+      nextNoteTime += secondsPerTick
+      subdivisionIndex = (subdivisionIndex + 1) % sub
+      if (subdivisionIndex === 0) {
+        beatIndex = (beatIndex + 1) % timeSignature.value.beats
+      }
     }
 
-    if (isRunning.value) {
-      timerId = window.setTimeout(scheduler, lookahead)
-    }
+    timerId = window.setTimeout(scheduler, lookahead)
   }
 
   function stop() {
@@ -191,8 +239,21 @@ export function useMetronome() {
       clearTimeout(timerId)
       timerId = null
     }
-    timeInProgress.value = 0
-    lastMinuteTime.value = 0
+    if (audioContext) {
+      const now = audioContext.currentTime
+      for (const s of scheduled) {
+        try {
+          s.gain.gain.cancelScheduledValues(now)
+          s.gain.gain.setValueAtTime(0, now)
+          s.osc.stop(now)
+        }
+        catch {}
+      }
+    }
+    scheduled = []
+    showVisualBeat.value = false
+    showAccentBeat.value = false
+    currentBeat.value = 0
   }
 
   function toggleMetronome() {
@@ -205,24 +266,29 @@ export function useMetronome() {
   }
 
   watch(bpm, (newValue) => {
+    if (!Number.isFinite(newValue)) {
+      bpm.value = 60
+      return
+    }
     if (newValue < 2) {
       bpm.value = 2
+      return
     }
-    else if (newValue > 300) {
+    if (newValue > 300) {
       bpm.value = 300
+      return
     }
-    if (isRunning.value) {
-      if (audioContext) {
-        const secondsPerBeat = 60.0 / bpm.value
-        nextBeatTime = audioContext.currentTime + secondsPerBeat
-      }
+    if (isRunning.value && audioContext) {
+      const sub = Math.max(1, subdivision.value)
+      const secondsPerTick = 60.0 / newValue / sub
+      nextNoteTime = audioContext.currentTime + secondsPerTick
     }
   })
 
   onUnmounted(() => {
     stop()
     if (audioContext) {
-      audioContext.close()
+      audioContext.close().catch(() => {})
       audioContext = null
     }
   })
@@ -231,12 +297,15 @@ export function useMetronome() {
     bpm,
     isRunning,
     showVisualBeat,
-    showFirstBeat,
-    minuteRepeat,
-    accentFirstBeat,
+    showAccentBeat,
     errorMessage,
-    timeInProgress,
     tempoPresets,
+    timeSignature,
+    timeSignatures,
+    subdivision,
+    subdivisionOptions,
+    volume,
+    currentBeat,
     setTempo,
     isActivePreset,
     toggleMetronome,

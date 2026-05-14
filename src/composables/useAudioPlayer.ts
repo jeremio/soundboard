@@ -24,7 +24,9 @@ export function useAudioPlayer(options?: UseAudioPlayerOptions) {
 
   function play() {
     if (audio.value) {
-      audio.value.play()
+      audio.value.play().catch((err) => {
+        console.warn('Audio play blocked:', err)
+      })
     }
   }
 
@@ -36,7 +38,9 @@ export function useAudioPlayer(options?: UseAudioPlayerOptions) {
       audio.value.pause()
     }
     else {
-      audio.value.play()
+      audio.value.play().catch((err) => {
+        console.warn('Audio play blocked:', err)
+      })
     }
   }
 
@@ -85,7 +89,8 @@ export function useAudioPlayer(options?: UseAudioPlayerOptions) {
       audio.value.removeEventListener('timeupdate', onTimeUpdate)
       audio.value.removeEventListener('loadedmetadata', onLoadedMetadata)
       audio.value.pause()
-      audio.value.src = ''
+      audio.value.removeAttribute('src')
+      audio.value.load()
     }
   })
 

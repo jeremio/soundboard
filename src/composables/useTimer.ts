@@ -40,10 +40,20 @@ export function useTimer() {
   const soundEnabled = ref(true)
   const status = ref<TimerStatus>('En attente')
   const remainingTime = ref(0)
+  const endsAt = ref<Date | null>(null)
   const endTime = computed(() => {
-    const now = new Date()
-    const end = new Date(now.getTime() + remainingTime.value)
-    return end.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    if (!endsAt.value)
+      return ''
+    return endsAt.value.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  })
+  const totalDuration = computed(() => {
+    const mode = modes.find(m => m.name === currentMode.value)
+    return mode ? mode.duration * 60 * 1000 : 0
+  })
+  const progress = computed(() => {
+    if (totalDuration.value === 0)
+      return 0
+    return 1 - remainingTime.value / totalDuration.value
   })
   let animationFrameId: number | null = null
   let lastTime = 0
@@ -100,6 +110,7 @@ export function useTimer() {
       if (remainingTime.value === 0) {
         remainingTime.value = (minutes.value * 60 + seconds.value) * 1000
       }
+      endsAt.value = new Date(Date.now() + remainingTime.value)
       status.value = 'En cours'
       animationFrameId = requestAnimationFrame(updateTimer)
     }
@@ -109,6 +120,7 @@ export function useTimer() {
     isActive.value = false
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId)
+      animationFrameId = null
       status.value = 'En pause'
     }
   }
@@ -117,20 +129,29 @@ export function useTimer() {
     isActive.value = false
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId)
+      animationFrameId = null
     }
     const currentModeData = modes.find(mode => mode.name === currentMode.value)!
     minutes.value = currentModeData.duration
     seconds.value = 0
     remainingTime.value = 0
+    endsAt.value = null
     status.value = 'En attente'
   }
 
   function changeMode(mode: Mode) {
+    if (mode.name === currentMode.value && status.value === 'En attente')
+      return
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId)
+      animationFrameId = null
+    }
     currentMode.value = mode.name
     minutes.value = mode.duration
     seconds.value = 0
     isActive.value = false
     remainingTime.value = 0
+    endsAt.value = null
     status.value = 'En attente'
   }
 
@@ -166,6 +187,7 @@ export function useTimer() {
     status,
     remainingTime,
     endTime,
+    progress,
     modes,
     getTimeString,
     getAriaTimeString,

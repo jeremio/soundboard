@@ -18,16 +18,35 @@
       </button>
     </div>
 
-    <div
-      class="timer-display"
-      role="timer"
-      aria-live="polite"
-      :aria-label="getAriaTimeString()"
-    >
-      <div class="time">
+    <div class="timer-display">
+      <svg class="progress-ring" viewBox="0 0 220 220" aria-hidden="true">
+        <circle
+          class="progress-ring-bg"
+          cx="110"
+          cy="110"
+          r="100"
+        />
+        <circle
+          class="progress-ring-fg"
+          cx="110"
+          cy="110"
+          r="100"
+          :stroke-dasharray="circumference"
+          :stroke-dashoffset="dashOffset"
+        />
+      </svg>
+      <div
+        class="time"
+        role="timer"
+        :aria-label="getAriaTimeString()"
+      >
         {{ getTimeString() }}
       </div>
     </div>
+
+    <p v-if="endTime && status !== 'En attente'" class="end-time">
+      Se termine à {{ endTime }}
+    </p>
 
     <div class="controls">
       <button
@@ -58,9 +77,12 @@
       </label>
     </div>
 
-    <!-- Élément pour les annonces d'accessibilité -->
-    <div role="status" aria-live="polite" class="sound-controls">
-      {{ currentAnnouncement }}
+    <p class="shortcuts" aria-hidden="true">
+      Raccourcis : <kbd>Espace</kbd> Démarrer/Pause · <kbd>R</kbd> Réinitialiser
+    </p>
+
+    <div role="status" aria-live="polite" class="sr-only">
+      {{ statusAnnouncement }}
     </div>
   </div>
 </template>
@@ -75,6 +97,7 @@ const {
   soundEnabled,
   status,
   endTime,
+  progress,
   modes,
   getTimeString,
   getAriaTimeString,
@@ -89,15 +112,18 @@ const soundSrc = computed(
 )
 const { play } = useAudioPlayer({ soundSrc })
 
-// Gestion des annonces d'accessibilité
-const currentAnnouncement = computed(() => {
-  if (status.value === 'En cours' || status.value === 'En pause') {
-    return `${status.value} - Se termine à ${endTime.value}`
-  }
-  if (status.value === 'Temps écoulé') {
-    return `${status.value} à ${endTime.value}`
-  }
-  return status.value
+const circumference = 2 * Math.PI * 100
+const dashOffset = computed(() => circumference * (1 - progress.value))
+
+// Annonce uniquement le changement de status, pas le compte à rebours
+const statusAnnouncement = computed(() => {
+  if (status.value === 'En cours' && endTime.value)
+    return `Démarré, se termine à ${endTime.value}`
+  if (status.value === 'En pause')
+    return 'En pause'
+  if (status.value === 'Temps écoulé')
+    return 'Temps écoulé'
+  return ''
 })
 
 function handleTimerFinished() {
@@ -107,6 +133,10 @@ function handleTimerFinished() {
 }
 
 function handleKeyDown(e: KeyboardEvent) {
+  const target = e.target as HTMLElement | null
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'))
+    return
+
   if (e.code === 'Space') {
     e.preventDefault()
     isActive.value ? pauseTimer() : startTimer()
@@ -153,7 +183,7 @@ onUnmounted(() => {
   border-radius: 4px;
   background-color: var(--light-gray);
   color: var(--text-color);
-  border: none;
+  border: 1px solid var(--gray);
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -161,15 +191,51 @@ onUnmounted(() => {
 .timer-modes button.active {
   background-color: var(--primary-color);
   color: var(--white);
+  border-color: var(--primary-color);
 }
 
 .timer-display {
-  margin-bottom: 20px;
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin-bottom: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.progress-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: var(--gray);
+  stroke-width: 8;
+}
+
+.progress-ring-fg {
+  fill: none;
+  stroke: var(--primary-color);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.2s linear;
 }
 
 .time {
+  position: relative;
   font-size: 3rem;
   font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+
+.end-time {
+  font-size: var(--small-font-size);
+  color: var(--dark-gray);
+  margin-bottom: 16px;
 }
 
 .controls {
@@ -225,5 +291,35 @@ onUnmounted(() => {
   gap: 5px;
   cursor: pointer;
   font-size: var(--small-font-size);
+}
+
+.shortcuts {
+  margin-top: 16px;
+  font-size: var(--small-font-size);
+  color: var(--dark-gray);
+}
+
+.shortcuts kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  margin: 0 2px;
+  font-family: monospace;
+  font-size: 0.85em;
+  background-color: var(--white);
+  border: 1px solid var(--gray);
+  border-radius: 3px;
+  box-shadow: 0 1px 0 var(--gray);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>

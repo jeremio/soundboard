@@ -10,9 +10,7 @@
       "~/*": ["src/*"]
     },
     "resolveJsonModule": true,
-    "types": [
-      "vite/client"
-    ],
+    "types": ["vite/client"],
     "allowJs": true,
     "strict": true,
     "strictNullChecks": true,
@@ -23,5 +21,5 @@
   },
 
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "exclude": ["dist", "node_modules", "eslint.config.js", "vite.config.js", "src/pages/useTimer.js"]
+  "exclude": ["dist", "node_modules", "eslint.config.js", "vite.config.js"]
 }

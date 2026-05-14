@@ -11,12 +11,12 @@ const routes = [
   {
     path: '/pomodoro',
     name: 'pomodoro',
-    component: () => import ('~/pages/PomodoroPage.vue'),
+    component: () => import('~/pages/PomodoroPage.vue'),
   },
   {
     path: '/metronome',
-    name: 'Metronome',
-    component: () => import ('~/pages/MetronomePage.vue'),
+    name: 'metronome',
+    component: () => import('~/pages/MetronomePage.vue'),
   },
 ]
 

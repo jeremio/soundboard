@@ -36,7 +36,7 @@
         :disabled="status === 'Temps écoulé'"
         @click="isActive ? pauseTimer() : startTimer()"
       >
-        {{ isActive ? 'Pause' : 'Démarrer' }}
+        {{ isActive ? "Pause" : "Démarrer" }}
       </button>
       <button
         class="reset"
@@ -59,17 +59,13 @@
     </div>
 
     <!-- Élément pour les annonces d'accessibilité -->
-    <div
-      role="status"
-      aria-live="polite"
-      class="sound-controls"
-    >
+    <div role="status" aria-live="polite" class="sound-controls">
       {{ currentAnnouncement }}
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAudioPlayer } from '~/composables/useAudioPlayer'
 import { useTimer } from '~/composables/useTimer'
 
@@ -88,7 +84,9 @@ const {
   changeMode,
 } = useTimer()
 
-const soundSrc = computed(() => modes.find(m => m.name === currentMode.value)?.sound ?? '')
+const soundSrc = computed(
+  () => modes.find(m => m.name === currentMode.value)?.sound ?? '',
+)
 const { play } = useAudioPlayer({ soundSrc })
 
 // Gestion des annonces d'accessibilité
@@ -108,7 +106,7 @@ function handleTimerFinished() {
   }
 }
 
-function handleKeyDown(e) {
+function handleKeyDown(e: KeyboardEvent) {
   if (e.code === 'Space') {
     e.preventDefault()
     isActive.value ? pauseTimer() : startTimer()

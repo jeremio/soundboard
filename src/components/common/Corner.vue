@@ -1,18 +1,30 @@
 <template>
   <div class="corner-component">
-    <router-link v-if="route.name !== 'index'" :to="{ name: 'index' }" class="corner-button">
+    <router-link
+      v-if="route.name !== 'index'"
+      :to="{ name: 'index' }"
+      class="corner-button"
+    >
       Soundboard
     </router-link>
-    <router-link v-if="route.name !== 'pomodoro'" :to="{ name: 'pomodoro' }" class="corner-button">
+    <router-link
+      v-if="route.name !== 'pomodoro'"
+      :to="{ name: 'pomodoro' }"
+      class="corner-button"
+    >
       Pomodoro
     </router-link>
-    <router-link v-if="route.name !== 'Metronome'" :to="{ name: 'Metronome' }" class="corner-button">
+    <router-link
+      v-if="route.name !== 'metronome'"
+      :to="{ name: 'metronome' }"
+      class="corner-button"
+    >
       Metronome
     </router-link>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

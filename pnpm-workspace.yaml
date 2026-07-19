@@ -6,6 +6,6 @@ allowBuilds:
   esbuild: true
 
 overrides:
-  vite: '>=8.0.16'
   '@babel/core': 7.29.6
   semver@6.3.1: 7.8.1
+  vite: '>=8.0.16'

@@ -163,6 +163,9 @@ export function useTimer() {
     isActive.value = false
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId)
+      // Remis a null comme dans pauseTimer, resetTimer et changeMode : c'est ce test qui sert
+      // d'indicateur « en cours », et resetTimer annulait sinon un id deja consomme.
+      animationFrameId = null
     }
     status.value = 'Temps écoulé'
     announceTimerComplete()

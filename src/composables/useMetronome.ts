@@ -43,6 +43,8 @@ export function useMetronome() {
   let beatIndex: number = 0
   let subdivisionIndex: number = 0
   let scheduled: ScheduledBeat[] = []
+  let visualTimers: number[] = []
+  let starting = false
 
   const scheduleAheadTime = 0.1
   const lookahead = 25.0
@@ -99,7 +101,10 @@ export function useMetronome() {
   }
 
   async function start() {
-    if (isRunning.value)
+    // isRunning n'est pose qu'apres l'await plus bas. Sans ce drapeau synchrone, un double-clic
+    // rapide au tout premier lancement cree deux AudioContext, dont le premier fuit : les
+    // navigateurs en limitent le nombre par document.
+    if (isRunning.value || starting)
       return
 
     const bpmValue = Number(bpm.value)
@@ -109,9 +114,16 @@ export function useMetronome() {
     }
     errorMessage.value = ''
 
+    starting = true
     try {
       if (!audioContext) {
         audioContext = await createAudioContext()
+      }
+      else if (audioContext.state === 'suspended') {
+        // Un contexte peut etre suspendu bien apres sa creation : onglet passe en arriere-plan,
+        // interruption sur mobile. Sans reprise, currentTime reste fige, le scheduler ne programme
+        // rien et le metronome est muet sans qu'aucun message ne le signale.
+        await audioContext.resume()
       }
 
       nextNoteTime = audioContext.currentTime + 0.05
@@ -125,9 +137,12 @@ export function useMetronome() {
       errorMessage.value = 'Erreur lors du démarrage du métronome. Veuillez réessayer.'
       console.error(error)
     }
+    finally {
+      starting = false
+    }
   }
 
-  function scheduleBeat(beatTime: number, kind: 'accent' | 'beat' | 'sub') {
+  function scheduleBeat(beatTime: number, kind: 'accent' | 'beat' | 'sub', beat: number) {
     if (!audioContext)
       return
 
@@ -167,8 +182,11 @@ export function useMetronome() {
     osc.start(beatTime)
     osc.stop(beatTime + 0.06)
 
-    const ref: ScheduledBeat = { osc, gain }
-    scheduled.push(ref)
+    // Nomme entry et non ref : `const ref` masquait l'import de Vue dans toute la fonction, si
+    // bien qu'un futur appel a ref() plus haut aurait leve un ReferenceError au lieu de resoudre
+    // l'import.
+    const entry: ScheduledBeat = { osc, gain }
+    scheduled.push(entry)
 
     osc.onended = () => {
       try {
@@ -176,23 +194,34 @@ export function useMetronome() {
         osc.disconnect()
       }
       catch {}
-      scheduled = scheduled.filter(s => s !== ref)
+      scheduled = scheduled.filter(s => s !== entry)
     }
 
     const delayMs = Math.max(0, (beatTime - audioContext.currentTime) * 1000)
-    setTimeout(() => {
+    // Les minuteurs visuels sont traques pour que stop() puisse les vider : ils ne testaient
+    // isRunning qu'au moment de se declencher, donc un arret suivi d'un redemarrage dans la
+    // fenetre de 100 ms laissait des callbacks de l'ancien cycle desynchroniser le nouveau.
+    const visualId = window.setTimeout(() => {
+      visualTimers = visualTimers.filter(id => id !== visualId)
       if (!isRunning.value)
         return
       if (kind !== 'sub') {
+        // Affecte ici et non a la programmation : currentBeat devancait le clic audible de
+        // jusqu'a 100 ms, et sautait des temps quand une passe du scheduler en programmait
+        // plusieurs d'un coup.
+        currentBeat.value = beat
         showVisualBeat.value = !showVisualBeat.value
       }
       if (kind === 'accent') {
         showAccentBeat.value = true
-        setTimeout(() => {
+        const accentId = window.setTimeout(() => {
+          visualTimers = visualTimers.filter(id => id !== accentId)
           showAccentBeat.value = false
         }, Math.min(200, (60_000 / bpm.value) * 0.4))
+        visualTimers.push(accentId)
       }
     }, delayMs)
+    visualTimers.push(visualId)
   }
 
   function scheduler() {
@@ -213,13 +242,12 @@ export function useMetronome() {
         else {
           kind = 'beat'
         }
-        currentBeat.value = beatIndex
       }
       else {
         kind = 'sub'
       }
 
-      scheduleBeat(nextNoteTime, kind)
+      scheduleBeat(nextNoteTime, kind, beatIndex)
 
       nextNoteTime += secondsPerTick
       subdivisionIndex = (subdivisionIndex + 1) % sub
@@ -239,6 +267,9 @@ export function useMetronome() {
       clearTimeout(timerId)
       timerId = null
     }
+    for (const id of visualTimers)
+      clearTimeout(id)
+    visualTimers = []
     if (audioContext) {
       const now = audioContext.currentTime
       for (const s of scheduled) {

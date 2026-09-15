@@ -1,11 +1,13 @@
-shellEmulator: true
-
+minimumReleaseAgeExcludePrune: true
 trustPolicy: no-downgrade
-
-allowBuilds:
-  esbuild: true
+shellEmulator: true
 
 overrides:
   '@babel/core': 7.29.6
+  brace-expansion: '>=5.0.9'
+  postcss: '>=8.5.23'
   semver@6.3.1: 7.8.1
   vite: '>=8.0.16'
+
+allowBuilds:
+  esbuild: true

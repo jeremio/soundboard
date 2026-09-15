@@ -53,6 +53,10 @@ export function useTimer() {
   const progress = computed(() => {
     if (totalDuration.value === 0)
       return 0
+    // remainingTime vaut 0 avant un cycle comme apres : seul l'anneau termine doit etre plein.
+    // Sans ce garde, la page s'ouvre sur un cercle entierement rempli qui se vide au demarrage.
+    if (remainingTime.value === 0 && status.value === 'En attente')
+      return 0
     return 1 - remainingTime.value / totalDuration.value
   })
   let animationFrameId: number | null = null

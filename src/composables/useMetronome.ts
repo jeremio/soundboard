@@ -265,6 +265,11 @@ export function useMetronome() {
     }
   }
 
+  // Ce watcher ne fait plus que borner la valeur. Rien a reprogrammer : scheduler() recalcule
+  // secondsPerTick depuis bpm a chaque passe, donc le nouveau tempo s'applique de lui-meme des le
+  // tick suivant. Repousser nextNoteTime a currentTime + un tick entier le placait au-dela de la
+  // fenetre de 100 ms, si bien que glisser le curseur ne programmait plus rien et laissait le
+  // metronome muet jusqu'au relachement.
   watch(bpm, (newValue) => {
     if (!Number.isFinite(newValue)) {
       bpm.value = 60
@@ -276,12 +281,6 @@ export function useMetronome() {
     }
     if (newValue > 300) {
       bpm.value = 300
-      return
-    }
-    if (isRunning.value && audioContext) {
-      const sub = Math.max(1, subdivision.value)
-      const secondsPerTick = 60.0 / newValue / sub
-      nextNoteTime = audioContext.currentTime + secondsPerTick
     }
   })
 

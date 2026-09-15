@@ -134,11 +134,21 @@ function handleTimerFinished() {
 
 function handleKeyDown(e: KeyboardEvent) {
   const target = e.target as HTMLElement | null
-  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA'))
+  const tag = target?.tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT')
     return
 
   if (e.code === 'Space') {
+    // Espace active un bouton au keyup : annuler le keydown ici avalerait l'activation, et un
+    // utilisateur au clavier pose sur « Pause courte » demarrerait le minuteur au lieu de
+    // changer de mode.
+    if (tag === 'BUTTON')
+      return
     e.preventDefault()
+    // Reprend la condition du :disabled du bouton Demarrer. Repartir depuis 00:00 rejoue
+    // handleTimerComplete des la premiere frame, donc le son de fin a chaque appui.
+    if (status.value === 'Temps écoulé')
+      return
     isActive.value ? pauseTimer() : startTimer()
   }
   else if (e.code === 'KeyR') {
